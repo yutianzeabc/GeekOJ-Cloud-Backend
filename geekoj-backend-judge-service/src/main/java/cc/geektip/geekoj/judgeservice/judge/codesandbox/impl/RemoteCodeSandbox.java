@@ -22,7 +22,7 @@ public class RemoteCodeSandbox implements CodeSandbox {
     @Resource
     private RemoteCodeSandboxClient remoteCodeSandboxClient;
 
-    @Value("${codesandbox.remote.x-service-key}")
+    @Value("${code-sandbox.remote.x-service-key}")
     private String xServiceKey;
 
     @Override

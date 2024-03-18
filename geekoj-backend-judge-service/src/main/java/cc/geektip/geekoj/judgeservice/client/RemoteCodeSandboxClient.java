@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
  * @date: 2024/3/13
  */
 
-@FeignClient(name = "remoteCodeSandboxService", url = "${codesandbox.remote.endpoint}")
+@FeignClient(name = "remoteCodeSandboxService", url = "${code-sandbox.remote.endpoint}")
 public interface RemoteCodeSandboxClient {
     @PostMapping("/executeCode")
     ExecuteCodeResponse executeCode(@RequestHeader("x-service-key") String xServiceKey, @RequestBody ExecuteCodeRequest executeCodeRequest);

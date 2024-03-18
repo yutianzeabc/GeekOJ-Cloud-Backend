@@ -5,7 +5,7 @@ import cc.geektip.geekoj.api.model.entity.QuestionSubmit;
 import cc.geektip.geekoj.judgeservice.judge.strategy.JudgeContext;
 import cc.geektip.geekoj.judgeservice.judge.strategy.JudgeStrategy;
 import cc.geektip.geekoj.judgeservice.judge.strategy.JudgeStrategyRegistry;
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 /**

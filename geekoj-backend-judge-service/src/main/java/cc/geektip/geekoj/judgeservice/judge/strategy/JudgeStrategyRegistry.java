@@ -1,7 +1,7 @@
 package cc.geektip.geekoj.judgeservice.judge.strategy;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

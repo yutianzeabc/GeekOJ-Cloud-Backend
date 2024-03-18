@@ -11,23 +11,23 @@ import cc.geektip.geekoj.api.model.vo.QuestionSubmitVO;
 import cc.geektip.geekoj.api.service.JudgeService;
 import cc.geektip.geekoj.api.service.QuestionService;
 import cc.geektip.geekoj.api.service.QuestionSubmitService;
-import cc.geektip.geekoj.api.service.UserService;
 import cc.geektip.geekoj.common.common.ErrorCode;
 import cc.geektip.geekoj.common.constant.CommonConstant;
+import cc.geektip.geekoj.common.constant.UserConstant;
 import cc.geektip.geekoj.common.exception.BusinessException;
 import cc.geektip.geekoj.common.utils.SqlUtils;
 import cc.geektip.geekoj.questionservice.mapper.QuestionSubmitMapper;
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jakarta.annotation.Resource;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
-import org.springframework.context.annotation.Lazy;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -41,9 +41,6 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
 
     @Resource
     private QuestionService questionService;
-
-    @DubboReference
-    private UserService userService;
 
     @DubboReference
     private JudgeService judgeService;
@@ -130,7 +127,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         // 脱敏：仅本人和管理员能看见自己（提交 userId 和登录用户 id 不同）提交的代码
         long userId = loginUser.getId();
         // 处理脱敏
-        if (userId != questionSubmit.getUserId() && !userService.isAdmin(loginUser)) {
+        if (userId != questionSubmit.getUserId() && !StpUtil.hasRole(UserConstant.ADMIN_ROLE)) {
             questionSubmitVO.setCode(null);
         }
         return questionSubmitVO;

@@ -18,11 +18,11 @@ import cc.geektip.geekoj.judgeservice.judge.codesandbox.CodeSandboxProxy;
 import cc.geektip.geekoj.judgeservice.judge.codesandbox.CodeSandboxRegistry;
 import cc.geektip.geekoj.judgeservice.judge.strategy.JudgeContext;
 import cn.hutool.json.JSONUtil;
-import jakarta.annotation.Resource;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Value;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +46,7 @@ public class JudgeServiceImpl implements JudgeService {
     private JudgeManager judgeManager;
 
 
-    @Value("${codesandbox.type:example}")
+    @Value("${code-sandbox.type:example}")
     private String type;
 
     public QuestionSubmit doJudge(long questionSubmitId) {
@@ -106,8 +106,7 @@ public class JudgeServiceImpl implements JudgeService {
         if (!update) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "题目状态更新错误");
         }
-        QuestionSubmit questionSubmitResult = questionSubmitService.getById(questionId);
-        return questionSubmitResult;
+        return questionSubmitService.getById(questionId);
     }
 
 }

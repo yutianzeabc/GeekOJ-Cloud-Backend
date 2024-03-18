@@ -49,23 +49,16 @@ public interface UserService extends IService<User> {
      * @param request
      * @return
      */
-    User getLoginUserPermitNull(HttpServletRequest request);
+    LoginUserVO getLoginUserPermitNull(HttpServletRequest request);
 
     /**
      * 是否为管理员
      *
-     * @param request
+     * @param userId
      * @return
      */
-    boolean isAdmin(HttpServletRequest request);
 
-    /**
-     * 是否为管理员
-     *
-     * @param user
-     * @return
-     */
-    boolean isAdmin(User user);
+    boolean isAdmin(long userId);
 
     /**
      * 用户注销

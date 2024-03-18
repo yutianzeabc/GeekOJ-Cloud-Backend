@@ -11,7 +11,6 @@ import cc.geektip.geekoj.api.model.vo.QuestionVO;
 import cc.geektip.geekoj.api.service.QuestionService;
 import cc.geektip.geekoj.api.service.QuestionSubmitService;
 import cc.geektip.geekoj.api.service.UserService;
-import cc.geektip.geekoj.common.annotation.AuthCheck;
 import cc.geektip.geekoj.common.common.BaseResponse;
 import cc.geektip.geekoj.common.common.DeleteRequest;
 import cc.geektip.geekoj.common.common.ErrorCode;
@@ -19,14 +18,16 @@ import cc.geektip.geekoj.common.common.ResultUtils;
 import cc.geektip.geekoj.common.constant.UserConstant;
 import cc.geektip.geekoj.common.exception.BusinessException;
 import cc.geektip.geekoj.common.exception.ThrowUtils;
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -99,13 +100,13 @@ public class QuestionController {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User user = userService.getLoginUser(request);
+        Long userId = StpUtil.getLoginIdAsLong();
         long id = deleteRequest.getId();
         // 判断是否存在
         Question oldQuestion = questionService.getById(id);
         ThrowUtils.throwIf(oldQuestion == null, ErrorCode.NOT_FOUND_ERROR);
         // 仅本人或管理员可删除
-        if (!oldQuestion.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
+        if (!oldQuestion.getUserId().equals(userId) && !StpUtil.hasRole(UserConstant.ADMIN_ROLE)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         boolean b = questionService.removeById(id);
@@ -119,7 +120,7 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/update")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateQuestion(@RequestBody QuestionUpdateRequest questionUpdateRequest) {
         if (questionUpdateRequest == null || questionUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -165,7 +166,7 @@ public class QuestionController {
         }
         User loginUser = userService.getLoginUser(request);
         // 不是本人或管理员，不能直接获取所有信息
-        if (!question.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
+        if (!question.getUserId().equals(loginUser.getId()) && !StpUtil.hasRole(UserConstant.ADMIN_ROLE)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         return ResultUtils.success(question);
@@ -240,7 +241,7 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/list/page")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
                                                            HttpServletRequest request) {
         long current = questionQueryRequest.getCurrent();
@@ -286,7 +287,7 @@ public class QuestionController {
         Question oldQuestion = questionService.getById(id);
         ThrowUtils.throwIf(oldQuestion == null, ErrorCode.NOT_FOUND_ERROR);
         // 仅本人或管理员可编辑
-        if (!oldQuestion.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
+        if (!oldQuestion.getUserId().equals(loginUser.getId()) && !StpUtil.hasRole(UserConstant.ADMIN_ROLE)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         boolean result = questionService.updateById(question);

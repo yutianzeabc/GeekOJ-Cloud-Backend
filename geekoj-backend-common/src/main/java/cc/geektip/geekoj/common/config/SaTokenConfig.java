@@ -2,12 +2,10 @@ package cc.geektip.geekoj.common.config;
 
 import cn.dev33.satoken.filter.SaFilter;
 import cn.dev33.satoken.filter.SaServletFilter;
-import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.same.SaSameUtil;
 import cn.dev33.satoken.util.SaResult;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -17,14 +15,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class SaTokenConfig implements WebMvcConfigurer {
-
-    /**
-     * 注册 Sa-Token 的拦截器，打开注解式鉴权功能
-     */
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new SaInterceptor()).addPathPatterns("/**");
-    }
 
     /**
      * 注册 Sa-Token全局过滤器，解决跨域问题
@@ -40,5 +30,4 @@ public class SaTokenConfig implements WebMvcConfigurer {
                     SaSameUtil.checkCurrentRequestToken();
                 }).setError(e -> SaResult.error(e.getMessage()));
     }
-
 }
