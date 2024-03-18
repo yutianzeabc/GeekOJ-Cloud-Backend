@@ -1,0 +1,20 @@
+package cc.geektip.geekoj.judgeservice.client;
+
+import cc.geektip.geekoj.api.model.codesandbox.ExecuteCodeRequest;
+import cc.geektip.geekoj.api.model.codesandbox.ExecuteCodeResponse;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+
+/**
+ * @description: 远程代码沙箱OpenFeign客户端接口类
+ * @author: Fish
+ * @date: 2024/3/13
+ */
+
+@FeignClient(name = "remoteCodeSandboxService", url = "${codesandbox.remote.endpoint}")
+public interface RemoteCodeSandboxClient {
+    @PostMapping("/executeCode")
+    ExecuteCodeResponse executeCode(@RequestHeader("x-service-key") String xServiceKey, @RequestBody ExecuteCodeRequest executeCodeRequest);
+}

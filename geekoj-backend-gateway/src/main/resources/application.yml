@@ -1,0 +1,56 @@
+# 公共配置文件
+spring:
+  application:
+    name: geekoj-backend-gateway
+  # 默认 dev 环境
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+      server-addr: link:8848
+      username: nacos
+      password: nacos
+    gateway:
+      routes:
+        - id: geekoj-backend-user-service
+          uri: lb://geekoj-backend-user-service
+          predicates:
+            - Path=/api/user/**
+        - id: geekoj-backend-question-service
+          uri: lb://geekoj-backend-question-service
+          predicates:
+            - Path=/api/question/**
+  main:
+    web-application-type: reactive
+  data:
+    redis:
+      database: 2
+      host: link
+      port: 6379
+      timeout: 5000
+      password: geektip
+      lettuce:
+        pool:
+          enabled: true
+          # 连接池最大连接数
+          max-active: 200
+          # 连接池最大阻塞等待时间（使用负值表示没有限制）
+          max-wait: -1ms
+          # 连接池中的最大空闲连接
+          max-idle: 10
+          # 连接池中的最小空闲连接
+          min-idle: 0
+server:
+  address: 0.0.0.0
+  port: 8100
+
+knife4j:
+  gateway:
+    enabled: true
+    tags-sorter: order
+    operations-sorter: order
+    discover:
+      enabled: true
+    strategy: discover
