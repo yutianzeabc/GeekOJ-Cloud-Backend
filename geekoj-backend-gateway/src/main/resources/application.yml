@@ -5,6 +5,9 @@ spring:
   # 默认 dev 环境
   profiles:
     active: dev
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   cloud:
     nacos:
       discovery:
@@ -46,6 +49,9 @@ server:
   address: 0.0.0.0
   port: 8100
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
 knife4j:
   gateway:
     enabled: true
@@ -53,4 +59,12 @@ knife4j:
     operations-sorter: order
     discover:
       enabled: true
+      excluded-services:
+        - geekoj-backend-gateway
     strategy: discover
+
+cors:
+  allowed-origins: "*"
+  allowed-methods: "*"
+  max-age: 3600
+  allowed-headers: "*"

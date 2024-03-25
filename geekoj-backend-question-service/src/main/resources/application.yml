@@ -80,8 +80,26 @@ mybatis-plus:
 
 # 新版本3.0接口文档配置
 springdoc:
+  info:
+    title: "GeekOJ 问题服务"
+    version: "1.0.0"
+    description: "GeekOJ 问题服务接口文档"
+    contact:
+      name: Fish
+      email: contact@geektip.cc
+      url: https://oj.geektip.cc
+    license:
+      name: Apache 2.0
+      url: https://www.apache.org/licenses/LICENSE-2.0.html
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
   group-configs:
-    - group: "GeekOJ 题目服务"
+    - group: 'default'
+      paths-to-match: '/**'
       packages-to-scan: "cc.geektip.geekoj.questionservice.controller"
 knife4j:
   enable: true

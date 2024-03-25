@@ -4,10 +4,9 @@ import cc.geektip.geekoj.judgeservice.judge.codesandbox.impl.ExampleCodeSandbox;
 import cc.geektip.geekoj.judgeservice.judge.codesandbox.impl.RemoteCodeSandbox;
 import cc.geektip.geekoj.judgeservice.judge.codesandbox.impl.ThirdPartyCodeSandbox;
 import jakarta.annotation.PostConstruct;
-import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
-
+import jakarta.annotation.Resource;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

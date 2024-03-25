@@ -9,14 +9,52 @@
     </parent>
     <artifactId>geekoj-backend-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>geekoj-backend-client</name>
-    <description>geekoj-backend-client</description>
+    <name>geekoj-backend-api</name>
+    <description>geekoj-backend-api</description>
     <dependencies>
         <dependency>
             <groupId>cc.geektip</groupId>
             <artifactId>geekoj-backend-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-spring-boot-starter</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>dubbo-registry-nacos</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.github.xiaoymin</groupId>
+                    <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+                </exclusion>
+                <!-- Sa-Token 权限认证, 在线文档：https://sa-token.cc -->
+                <exclusion>
+                    <groupId>cn.dev33</groupId>
+                    <artifactId>sa-token-spring-boot3-starter</artifactId>
+                </exclusion>
+                <!-- Sa-Token 整合 Redis （使用 jackson 序列化方式） -->
+                <exclusion>
+                    <groupId>cn.dev33</groupId>
+                    <artifactId>sa-token-redis-jackson</artifactId>
+                </exclusion>
+                <!-- Sa-Token 整合 SpringAOP 实现注解鉴权 -->
+                <exclusion>
+                    <groupId>cn.dev33</groupId>
+                    <artifactId>sa-token-spring-aop</artifactId>
+                </exclusion>
+                <!-- Sa-Token 整合 Dubbo -->
+                <exclusion>
+                    <groupId>cn.dev33</groupId>
+                    <artifactId>sa-token-dubbo</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

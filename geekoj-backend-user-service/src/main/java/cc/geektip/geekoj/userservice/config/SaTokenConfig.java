@@ -5,7 +5,7 @@ import cc.geektip.geekoj.common.constant.UserConstant;
 import cn.dev33.satoken.stp.StpInterface;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.List;
 
 /**

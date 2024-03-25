@@ -85,8 +85,26 @@ code-sandbox:
     x-service-key: 889b6b14-cdc0-4378-8fa5-6488a4b1f2f7
 # 新版本3.0接口文档配置
 springdoc:
+  info:
+    title: "GeekOJ 判题服务"
+    version: "1.0.0"
+    description: "GeekOJ 判题服务接口文档"
+    contact:
+      name: Fish
+      email: contact@geektip.cc
+      url: https://oj.geektip.cc
+    license:
+      name: Apache 2.0
+      url: https://www.apache.org/licenses/LICENSE-2.0.html
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
   group-configs:
-    - group: "GeekOJ 判题服务"
+    - group: 'default'
+      paths-to-match: '/**'
       packages-to-scan: "cc.geektip.geekoj.judgeservice.controller"
 knife4j:
   enable: true

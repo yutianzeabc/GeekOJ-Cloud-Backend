@@ -11,12 +11,10 @@
 
 
     <artifactId>geekoj-backend-common</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>geekoj-backend-common</name>
+    <description>geekoj-backend-common</description>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>org.jetbrains</groupId>
@@ -38,6 +36,12 @@
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-registry-nacos</artifactId>
             <version>${dubbo.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.xiaoymin/knife4j-openapi3-jakarta-spring-boot-starter -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+            <version>4.5.0</version>
         </dependency>
         <!-- Sa-Token 权限认证, 在线文档：https://sa-token.cc -->
         <dependency>
