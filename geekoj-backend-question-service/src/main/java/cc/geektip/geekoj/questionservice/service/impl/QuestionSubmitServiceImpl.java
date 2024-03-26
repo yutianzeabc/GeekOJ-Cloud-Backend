@@ -8,7 +8,6 @@ import cc.geektip.geekoj.api.model.entity.User;
 import cc.geektip.geekoj.api.model.enums.QuestionSubmitLanguageEnum;
 import cc.geektip.geekoj.api.model.enums.QuestionSubmitStatusEnum;
 import cc.geektip.geekoj.api.model.vo.QuestionSubmitVO;
-import cc.geektip.geekoj.api.service.JudgeService;
 import cc.geektip.geekoj.api.service.QuestionService;
 import cc.geektip.geekoj.api.service.QuestionSubmitService;
 import cc.geektip.geekoj.common.common.ErrorCode;
@@ -17,6 +16,7 @@ import cc.geektip.geekoj.common.constant.UserConstant;
 import cc.geektip.geekoj.common.exception.BusinessException;
 import cc.geektip.geekoj.common.utils.SqlUtils;
 import cc.geektip.geekoj.questionservice.mapper.QuestionSubmitMapper;
+import cc.geektip.geekoj.questionservice.mq.JudgeProducer;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -24,26 +24,21 @@ import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.dubbo.config.annotation.DubboReference;
+import jakarta.annotation.Resource;
 import org.apache.dubbo.config.annotation.DubboService;
 
-import jakarta.annotation.Resource;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
  * 题目提交服务实现
  */
 @DubboService
-public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper, QuestionSubmit>
-        implements QuestionSubmitService {
-
+public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper, QuestionSubmit> implements QuestionSubmitService {
     @Resource
     private QuestionService questionService;
-
-    @DubboReference
-    private JudgeService judgeService;
+    @Resource
+    private JudgeProducer judgeProducer;
 
     /**
      * 提交题目
@@ -82,11 +77,8 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "数据插入失败");
         }
         Long questionSubmitId = questionSubmit.getId();
-        // 执行判题服务
-        CompletableFuture.runAsync(() -> {
-            // 判题
-            judgeService.doJudge(questionSubmitId);
-        });
+        // 发送判题消息
+        judgeProducer.sendJudgeMessage(questionSubmitId);
         return questionSubmit.getId();
     }
 

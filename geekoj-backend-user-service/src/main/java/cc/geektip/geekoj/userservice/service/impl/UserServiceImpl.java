@@ -124,12 +124,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
 //        }
         // 从数据库查询（追求性能的话可以注释，直接走缓存）
-        long userId = StpUtil.getLoginIdAsLong();
-        User currentUser = this.getById(userId);
-        if (currentUser == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "用户不存在");
+        if (StpUtil.isLogin()) {
+            long userId = StpUtil.getLoginIdAsLong();
+            User currentUser = this.getById(userId);
+            if (currentUser == null) {
+                throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "用户不存在");
+            }
+            return currentUser;
+        } else {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
-        return currentUser;
     }
 
     /**

@@ -40,7 +40,8 @@ public class SaTokenConfig {
                         "/img.icons/**",
                         "/swagger-resources/**",
                         "/v3/api-docs/**",
-                        "/**/v3/api-docs"
+                        "/**/v3/api-docs",
+                        "/api/user/get/login"
                 )
                 // 鉴权方法：每次访问进入
                 .setAuth(obj -> {

@@ -32,7 +32,7 @@ spring:
   # Redis 配置
   data:
     redis:
-      database: 2
+      database: 6
       host: link
       port: 6379
       timeout: 5000
@@ -55,6 +55,10 @@ dubbo:
     port: 20883
   scan:
     base-packages: cc.geektip.geekoj.api
+rocketmq:
+  producer:
+    group: geekoj
+  name-server: link:9876
 server:
   address: 0.0.0.0
   port: 8103
@@ -81,7 +85,7 @@ mybatis-plus:
 code-sandbox:
   type: remote
   remote:
-    endpoint: http://localhost:8090
+    endpoint: http://link:8090
     x-service-key: 889b6b14-cdc0-4378-8fa5-6488a4b1f2f7
 # 新版本3.0接口文档配置
 springdoc:
