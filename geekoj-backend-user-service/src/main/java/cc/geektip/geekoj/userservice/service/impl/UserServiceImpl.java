@@ -105,8 +105,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         // 3. 记录用户的登录态
         StpUtil.login(user.getId());
-        StpUtil.getSession().set(SaSession.USER, getLoginUserVO(user));
-        return this.getLoginUserVO(user);
+        LoginUserVO loginUserVO = this.getLoginUserVO(user);
+        StpUtil.getSession().set(SaSession.USER, loginUserVO);
+        return loginUserVO;
     }
 
     /**
@@ -134,6 +135,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         } else {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
+    }
+
+    /**
+     * 获取当前登录用户
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public LoginUserVO getLoginUserVO(HttpServletRequest request) {
+        if (!StpUtil.isLogin()) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        return StpUtil.getSession().getModel(SaSession.USER, LoginUserVO.class);
     }
 
     /**

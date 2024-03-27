@@ -4,7 +4,6 @@ import cc.geektip.geekoj.api.model.dto.questionsubmit.QuestionSubmitAddRequest;
 import cc.geektip.geekoj.api.model.dto.questionsubmit.QuestionSubmitQueryRequest;
 import cc.geektip.geekoj.api.model.entity.Question;
 import cc.geektip.geekoj.api.model.entity.QuestionSubmit;
-import cc.geektip.geekoj.api.model.entity.User;
 import cc.geektip.geekoj.api.model.enums.QuestionSubmitLanguageEnum;
 import cc.geektip.geekoj.api.model.enums.QuestionSubmitStatusEnum;
 import cc.geektip.geekoj.api.model.vo.QuestionSubmitVO;
@@ -44,11 +43,10 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
      * 提交题目
      *
      * @param questionSubmitAddRequest
-     * @param loginUser
      * @return
      */
     @Override
-    public long doQuestionSubmit(QuestionSubmitAddRequest questionSubmitAddRequest, User loginUser) {
+    public long doQuestionSubmit(QuestionSubmitAddRequest questionSubmitAddRequest) {
         // 校验编程语言是否合法
         String language = questionSubmitAddRequest.getLanguage();
         QuestionSubmitLanguageEnum languageEnum = QuestionSubmitLanguageEnum.getEnumByValue(language);
@@ -61,11 +59,11 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         if (question == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        // 是否已提交题目
-        long userId = loginUser.getId();
+        // 取得当前登录用户
+        Long loginUserId = StpUtil.getLoginIdAsLong();
         // 每个用户串行提交题目
         QuestionSubmit questionSubmit = new QuestionSubmit();
-        questionSubmit.setUserId(userId);
+        questionSubmit.setUserId(loginUserId);
         questionSubmit.setQuestionId(questionId);
         questionSubmit.setCode(questionSubmitAddRequest.getCode());
         questionSubmit.setLanguage(language);
@@ -114,31 +112,31 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
     }
 
     @Override
-    public QuestionSubmitVO getQuestionSubmitVO(QuestionSubmit questionSubmit, User loginUser) {
+    public QuestionSubmitVO getQuestionSubmitVO(QuestionSubmit questionSubmit) {
         QuestionSubmitVO questionSubmitVO = QuestionSubmitVO.objToVo(questionSubmit);
         // 脱敏：仅本人和管理员能看见自己（提交 userId 和登录用户 id 不同）提交的代码
-        long userId = loginUser.getId();
+        // 取得当前登录用户
+        Long loginUserId = StpUtil.getLoginIdAsLong();
         // 处理脱敏
-        if (userId != questionSubmit.getUserId() && !StpUtil.hasRole(UserConstant.ADMIN_ROLE)) {
+        if (loginUserId != questionSubmit.getUserId() && !StpUtil.hasRole(UserConstant.ADMIN_ROLE)) {
             questionSubmitVO.setCode(null);
         }
         return questionSubmitVO;
     }
 
     @Override
-    public Page<QuestionSubmitVO> getQuestionSubmitVOPage(Page<QuestionSubmit> questionSubmitPage, User loginUser) {
+    public Page<QuestionSubmitVO> getQuestionSubmitVOPage(Page<QuestionSubmit> questionSubmitPage) {
         List<QuestionSubmit> questionSubmitList = questionSubmitPage.getRecords();
         Page<QuestionSubmitVO> questionSubmitVOPage = new Page<>(questionSubmitPage.getCurrent(), questionSubmitPage.getSize(), questionSubmitPage.getTotal());
         if (CollectionUtils.isEmpty(questionSubmitList)) {
             return questionSubmitVOPage;
         }
         List<QuestionSubmitVO> questionSubmitVOList = questionSubmitList.stream()
-                .map(questionSubmit -> getQuestionSubmitVO(questionSubmit, loginUser))
+                .map(this::getQuestionSubmitVO)
                 .collect(Collectors.toList());
         questionSubmitVOPage.setRecords(questionSubmitVOList);
         return questionSubmitVOPage;
     }
-
 
 }
 

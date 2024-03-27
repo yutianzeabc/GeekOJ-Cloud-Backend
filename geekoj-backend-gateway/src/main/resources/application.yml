@@ -64,7 +64,7 @@ knife4j:
     strategy: discover
 
 cors:
-  allowed-origins: "*"
+  allowed-origins: "http://localhost:8080"
   allowed-methods: "*"
   max-age: 3600
-  allowed-headers: "*"
+  allowed-headers: "content-type, x-requested-with, Token, sa-token, *"

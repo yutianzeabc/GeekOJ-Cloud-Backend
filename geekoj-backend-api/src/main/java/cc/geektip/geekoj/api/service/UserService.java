@@ -43,6 +43,8 @@ public interface UserService extends IService<User> {
      */
     User getLoginUser(HttpServletRequest request);
 
+    LoginUserVO getLoginUserVO(HttpServletRequest request);
+
     /**
      * 获取当前登录用户（允许未登录）
      *
