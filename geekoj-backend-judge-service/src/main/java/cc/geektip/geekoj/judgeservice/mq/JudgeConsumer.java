@@ -1,6 +1,6 @@
 package cc.geektip.geekoj.judgeservice.mq;
 
-import cc.geektip.geekoj.api.service.JudgeService;
+import cc.geektip.geekoj.api.judgeservice.JudgeService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.annotation.ConsumeMode;

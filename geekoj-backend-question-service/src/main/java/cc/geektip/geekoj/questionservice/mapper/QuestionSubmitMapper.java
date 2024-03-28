@@ -1,6 +1,6 @@
 package cc.geektip.geekoj.questionservice.mapper;
 
-import cc.geektip.geekoj.api.model.entity.QuestionSubmit;
+import cc.geektip.geekoj.api.model.entity.problem.QuestionSubmit;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

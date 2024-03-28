@@ -1,10 +1,10 @@
 package cc.geektip.geekoj.questionservice.service.impl;
 
-import cc.geektip.geekoj.api.model.dto.questionsubmit.QuestionSubmitAddRequest;
-import cc.geektip.geekoj.api.model.dto.questionsubmit.QuestionSubmitQueryRequest;
-import cc.geektip.geekoj.api.model.entity.Question;
-import cc.geektip.geekoj.api.model.entity.QuestionSubmit;
-import cc.geektip.geekoj.api.model.enums.QuestionSubmitLanguageEnum;
+import cc.geektip.geekoj.api.model.dto.question.QuestionSubmitAddRequest;
+import cc.geektip.geekoj.api.model.dto.question.QuestionSubmitQueryRequest;
+import cc.geektip.geekoj.api.model.entity.problem.Question;
+import cc.geektip.geekoj.api.model.entity.problem.QuestionSubmit;
+import cc.geektip.geekoj.api.model.enums.LanguageEnum;
 import cc.geektip.geekoj.api.model.enums.QuestionSubmitStatusEnum;
 import cc.geektip.geekoj.api.model.vo.QuestionSubmitVO;
 import cc.geektip.geekoj.api.service.QuestionService;
@@ -49,7 +49,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
     public long doQuestionSubmit(QuestionSubmitAddRequest questionSubmitAddRequest) {
         // 校验编程语言是否合法
         String language = questionSubmitAddRequest.getLanguage();
-        QuestionSubmitLanguageEnum languageEnum = QuestionSubmitLanguageEnum.getEnumByValue(language);
+        LanguageEnum languageEnum = LanguageEnum.getEnumByValue(language);
         if (languageEnum == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "编程语言错误");
         }

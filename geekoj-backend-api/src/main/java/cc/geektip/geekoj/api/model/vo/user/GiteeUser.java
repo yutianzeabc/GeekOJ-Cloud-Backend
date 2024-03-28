@@ -1,0 +1,10 @@
+package cc.geektip.geekoj.api.model.vo.user;
+
+import lombok.Data;
+
+@Data
+public class GiteeUser {
+    private String id;
+    private String name;
+    private String avatar_url;
+}

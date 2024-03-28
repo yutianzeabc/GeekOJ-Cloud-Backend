@@ -2,8 +2,8 @@ package cc.geektip.geekoj.userservice.service.impl;
 
 
 import cc.geektip.geekoj.api.model.dto.user.UserQueryRequest;
-import cc.geektip.geekoj.api.model.entity.User;
-import cc.geektip.geekoj.api.model.enums.UserRoleEnum;
+import cc.geektip.geekoj.api.model.entity.user.User;
+import cc.geektip.geekoj.api.userservice.enums.UserRoleEnum;
 import cc.geektip.geekoj.api.model.vo.LoginUserVO;
 import cc.geektip.geekoj.api.model.vo.UserVO;
 import cc.geektip.geekoj.api.service.UserService;

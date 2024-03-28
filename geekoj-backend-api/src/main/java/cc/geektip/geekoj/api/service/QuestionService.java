@@ -1,7 +1,7 @@
 package cc.geektip.geekoj.api.service;
 
 import cc.geektip.geekoj.api.model.dto.question.QuestionQueryRequest;
-import cc.geektip.geekoj.api.model.entity.Question;
+import cc.geektip.geekoj.api.model.entity.problem.Question;
 import cc.geektip.geekoj.api.model.vo.QuestionVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

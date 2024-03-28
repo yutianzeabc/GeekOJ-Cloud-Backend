@@ -1,6 +1,6 @@
 package cc.geektip.geekoj.userservice.mapper;
 
-import cc.geektip.geekoj.api.model.entity.User;
+import cc.geektip.geekoj.api.model.entity.user.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

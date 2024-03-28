@@ -2,38 +2,17 @@ package cc.geektip.geekoj.api.model.dto.user;
 
 import lombok.Data;
 
-import java.io.Serializable;
+import java.util.List;
 
-/**
- * 用户更新请求
- *
- */
 @Data
-public class UserUpdateRequest implements Serializable {
-    /**
-     * id
-     */
-    private Long id;
-
-    /**
-     * 用户昵称
-     */
-    private String userName;
-
-    /**
-     * 用户头像
-     */
-    private String userAvatar;
-
-    /**
-     * 简介
-     */
-    private String userProfile;
-
-    /**
-     * 用户角色：user/admin/ban
-     */
-    private String userRole;
-
-    private static final long serialVersionUID = 1L;
+public class UserUpdateRequest {
+    private Long uid;
+    private String username;
+    private String password;
+    private List<Long> tags;
+    private String signature;
+    private String email;
+    private String phone;
+    private Integer sex;
+    private String avatar;
 }

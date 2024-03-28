@@ -1,6 +1,6 @@
 package cc.geektip.geekoj.api.service;
 
-import cc.geektip.geekoj.api.model.entity.QuestionSubmit;
+import cc.geektip.geekoj.api.model.entity.problem.QuestionSubmit;
 
 /**
  * 判题服务

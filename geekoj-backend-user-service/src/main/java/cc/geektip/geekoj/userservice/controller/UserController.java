@@ -1,7 +1,7 @@
 package cc.geektip.geekoj.userservice.controller;
 
 import cc.geektip.geekoj.api.model.dto.user.*;
-import cc.geektip.geekoj.api.model.entity.User;
+import cc.geektip.geekoj.api.model.entity.user.User;
 import cc.geektip.geekoj.api.model.vo.LoginUserVO;
 import cc.geektip.geekoj.api.model.vo.UserVO;
 import cc.geektip.geekoj.api.service.UserService;

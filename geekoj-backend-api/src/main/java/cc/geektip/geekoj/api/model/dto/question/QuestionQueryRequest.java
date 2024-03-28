@@ -4,6 +4,7 @@ import cc.geektip.geekoj.common.common.PageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -14,36 +15,14 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class QuestionQueryRequest extends PageRequest implements Serializable {
-
-    /**
-     * id
-     */
-    private Long id;
-
-    /**
-     * 标题
-     */
-    private String title;
-
-    /**
-     * 内容
-     */
-    private String content;
-
     /**
      * 标签列表
      */
     private List<String> tags;
+    private String status;
+    private String difficulty;
+    private String keyword;
 
-    /**
-     * 题目答案
-     */
-    private String answer;
-
-    /**
-     * 创建用户 id
-     */
-    private Long userId;
-
+    @Serial
     private static final long serialVersionUID = 1L;
 }

@@ -1,21 +1,19 @@
 package cc.geektip.geekoj.api.model.dto.user;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
-import java.io.Serializable;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 
-/**
- * 用户注册请求体
- *
- */
 @Data
-public class UserRegisterRequest implements Serializable {
+public class UserRegisterRequest {
+    @Length(min = 6,max = 18,message = "密码必须是6—18位字符")
+    private String password;
 
-    private static final long serialVersionUID = 3191241716373120793L;
+    @Email
+    private String email;
 
-    private String userAccount;
-
-    private String userPassword;
-
-    private String checkPassword;
+    @NotEmpty(message = "验证码不能为空")
+    private String captcha;
 }

@@ -1,9 +1,9 @@
 package cc.geektip.geekoj.judgeservice.judge.codesandbox.impl;
 
-import cc.geektip.geekoj.api.model.codesandbox.ExecuteCodeRequest;
-import cc.geektip.geekoj.api.model.codesandbox.ExecuteCodeResponse;
-import cc.geektip.geekoj.api.model.codesandbox.JudgeInfo;
-import cc.geektip.geekoj.api.model.enums.JudgeInfoMessageEnum;
+import cc.geektip.geekoj.api.codesandbox.dto.ExecuteCodeRequest;
+import cc.geektip.geekoj.api.codesandbox.dto.ExecuteCodeResponse;
+import cc.geektip.geekoj.api.codesandbox.vo.JudgeInfo;
+import cc.geektip.geekoj.api.model.enums.JudgeInfoEnum;
 import cc.geektip.geekoj.api.model.enums.QuestionSubmitStatusEnum;
 import cc.geektip.geekoj.judgeservice.judge.codesandbox.CodeSandbox;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class ExampleCodeSandbox implements CodeSandbox {
         executeCodeResponse.setMessage("测试执行成功");
         executeCodeResponse.setStatus(QuestionSubmitStatusEnum.SUCCEED.getValue());
         JudgeInfo judgeInfo = new JudgeInfo();
-        judgeInfo.setMessage(JudgeInfoMessageEnum.ACCEPTED.getText());
+        judgeInfo.setMessage(JudgeInfoEnum.ACCEPTED.getText());
         judgeInfo.setMemory(100L);
         judgeInfo.setTime(100L);
         executeCodeResponse.setJudgeInfo(judgeInfo);

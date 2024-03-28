@@ -1,7 +1,7 @@
 package cc.geektip.geekoj.judgeservice.judge;
 
-import cc.geektip.geekoj.api.model.codesandbox.JudgeInfo;
-import cc.geektip.geekoj.api.model.entity.QuestionSubmit;
+import cc.geektip.geekoj.api.codesandbox.vo.JudgeInfo;
+import cc.geektip.geekoj.api.model.entity.problem.QuestionSubmit;
 import cc.geektip.geekoj.judgeservice.judge.strategy.JudgeContext;
 import cc.geektip.geekoj.judgeservice.judge.strategy.JudgeStrategy;
 import cc.geektip.geekoj.judgeservice.judge.strategy.JudgeStrategyRegistry;

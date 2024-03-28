@@ -1,7 +1,7 @@
 package cc.geektip.geekoj.judgeservice.client;
 
-import cc.geektip.geekoj.api.model.codesandbox.ExecuteCodeRequest;
-import cc.geektip.geekoj.api.model.codesandbox.ExecuteCodeResponse;
+import cc.geektip.geekoj.api.codesandbox.dto.ExecuteCodeRequest;
+import cc.geektip.geekoj.api.codesandbox.dto.ExecuteCodeResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

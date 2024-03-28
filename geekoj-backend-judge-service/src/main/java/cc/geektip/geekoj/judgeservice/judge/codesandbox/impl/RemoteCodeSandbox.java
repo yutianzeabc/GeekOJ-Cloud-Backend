@@ -1,7 +1,7 @@
 package cc.geektip.geekoj.judgeservice.judge.codesandbox.impl;
 
-import cc.geektip.geekoj.api.model.codesandbox.ExecuteCodeRequest;
-import cc.geektip.geekoj.api.model.codesandbox.ExecuteCodeResponse;
+import cc.geektip.geekoj.api.codesandbox.dto.ExecuteCodeRequest;
+import cc.geektip.geekoj.api.codesandbox.dto.ExecuteCodeResponse;
 import cc.geektip.geekoj.judgeservice.client.RemoteCodeSandboxClient;
 import cc.geektip.geekoj.judgeservice.judge.codesandbox.CodeSandbox;
 import lombok.extern.slf4j.Slf4j;

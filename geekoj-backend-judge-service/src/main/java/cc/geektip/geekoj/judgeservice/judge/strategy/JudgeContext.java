@@ -1,9 +1,9 @@
 package cc.geektip.geekoj.judgeservice.judge.strategy;
 
-import cc.geektip.geekoj.api.model.entity.Question;
-import cc.geektip.geekoj.api.model.codesandbox.JudgeInfo;
+import cc.geektip.geekoj.api.model.entity.problem.Question;
+import cc.geektip.geekoj.api.codesandbox.vo.JudgeInfo;
 import cc.geektip.geekoj.api.model.dto.question.JudgeCase;
-import cc.geektip.geekoj.api.model.entity.QuestionSubmit;
+import cc.geektip.geekoj.api.model.entity.problem.QuestionSubmit;
 import lombok.Data;
 
 import java.util.List;

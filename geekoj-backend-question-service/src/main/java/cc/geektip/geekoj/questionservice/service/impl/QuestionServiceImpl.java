@@ -1,8 +1,8 @@
 package cc.geektip.geekoj.questionservice.service.impl;
 
 import cc.geektip.geekoj.api.model.dto.question.QuestionQueryRequest;
-import cc.geektip.geekoj.api.model.entity.Question;
-import cc.geektip.geekoj.api.model.entity.User;
+import cc.geektip.geekoj.api.model.entity.problem.Question;
+import cc.geektip.geekoj.api.model.entity.user.User;
 import cc.geektip.geekoj.api.model.vo.QuestionVO;
 import cc.geektip.geekoj.api.model.vo.UserVO;
 import cc.geektip.geekoj.api.service.QuestionService;

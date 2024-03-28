@@ -1,13 +1,13 @@
 package cc.geektip.geekoj.judgeservice.service.impl;
 
-import cc.geektip.geekoj.api.model.codesandbox.ExecuteCodeRequest;
-import cc.geektip.geekoj.api.model.codesandbox.ExecuteCodeResponse;
-import cc.geektip.geekoj.api.model.codesandbox.JudgeInfo;
+import cc.geektip.geekoj.api.codesandbox.dto.ExecuteCodeRequest;
+import cc.geektip.geekoj.api.codesandbox.dto.ExecuteCodeResponse;
+import cc.geektip.geekoj.api.codesandbox.vo.JudgeInfo;
 import cc.geektip.geekoj.api.model.dto.question.JudgeCase;
-import cc.geektip.geekoj.api.model.entity.Question;
-import cc.geektip.geekoj.api.model.entity.QuestionSubmit;
+import cc.geektip.geekoj.api.model.entity.problem.Question;
+import cc.geektip.geekoj.api.model.entity.problem.QuestionSubmit;
 import cc.geektip.geekoj.api.model.enums.QuestionSubmitStatusEnum;
-import cc.geektip.geekoj.api.service.JudgeService;
+import cc.geektip.geekoj.api.judgeservice.JudgeService;
 import cc.geektip.geekoj.api.service.QuestionService;
 import cc.geektip.geekoj.api.service.QuestionSubmitService;
 import cc.geektip.geekoj.common.common.ErrorCode;

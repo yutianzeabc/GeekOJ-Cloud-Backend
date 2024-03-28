@@ -1,8 +1,8 @@
 package cc.geektip.geekoj.api.service;
 
-import cc.geektip.geekoj.api.model.dto.questionsubmit.QuestionSubmitAddRequest;
-import cc.geektip.geekoj.api.model.dto.questionsubmit.QuestionSubmitQueryRequest;
-import cc.geektip.geekoj.api.model.entity.QuestionSubmit;
+import cc.geektip.geekoj.api.model.dto.question.QuestionSubmitAddRequest;
+import cc.geektip.geekoj.api.model.dto.question.QuestionSubmitQueryRequest;
+import cc.geektip.geekoj.api.model.entity.problem.QuestionSubmit;
 import cc.geektip.geekoj.api.model.vo.QuestionSubmitVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

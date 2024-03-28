@@ -1,10 +1,10 @@
 package cc.geektip.geekoj.questionservice.controller;
 
 import cc.geektip.geekoj.api.model.dto.question.*;
-import cc.geektip.geekoj.api.model.dto.questionsubmit.QuestionSubmitAddRequest;
-import cc.geektip.geekoj.api.model.dto.questionsubmit.QuestionSubmitQueryRequest;
-import cc.geektip.geekoj.api.model.entity.Question;
-import cc.geektip.geekoj.api.model.entity.QuestionSubmit;
+import cc.geektip.geekoj.api.model.dto.question.QuestionSubmitAddRequest;
+import cc.geektip.geekoj.api.model.dto.question.QuestionSubmitQueryRequest;
+import cc.geektip.geekoj.api.model.entity.problem.Question;
+import cc.geektip.geekoj.api.model.entity.problem.QuestionSubmit;
 import cc.geektip.geekoj.api.model.vo.QuestionSubmitVO;
 import cc.geektip.geekoj.api.model.vo.QuestionVO;
 import cc.geektip.geekoj.api.service.QuestionService;
