@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @description: API文档信息配置类
  * @author: Fish
- * @date: 2024/3/25
+ *
  */
 @Data
 @Configuration

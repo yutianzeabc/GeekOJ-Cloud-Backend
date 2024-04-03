@@ -1,25 +1,23 @@
 package cc.geektip.geekoj.api.service.user;
 
-import com.antares.common.model.vo.UserTagVo;
-import com.antares.member.model.dto.tag.UserTagAddRequest;
-import com.antares.member.model.entity.UserTag;
-import com.antares.member.model.vo.tag.UserTagCategoryVo;
+import cc.geektip.geekoj.api.model.dto.user.UserTagAddRequest;
+import cc.geektip.geekoj.api.model.entity.user.UserTag;
+import cc.geektip.geekoj.api.model.vo.user.UserTagVo;
+import cc.geektip.geekoj.api.model.vo.user.UserTagCategoryVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
-* @author Antares
+* @author Fish
 * @description 针对表【user_tag】的数据库操作Service
-* @createDate 2023-03-05 22:05:53
 */
 public interface UserTagService extends IService<UserTag> {
 
     List<UserTagCategoryVo> getAllTags();
 
-    UserTagVo addATag(UserTagAddRequest userTagAddRequest, HttpServletRequest request);
+    UserTagVo addATag(UserTagAddRequest userTagAddRequest);
 
-    public List<UserTagVo> idsToTags(String idsJSON);
-    public List<UserTagVo> idsToTags(List<Long> tagIds);
+    List<UserTagVo> idsToTags(String idsJSON);
+    List<UserTagVo> idsToTags(List<Long> tagIds);
 }

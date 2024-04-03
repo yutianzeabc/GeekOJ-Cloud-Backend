@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @description: Knife4j配置
  * @author: Fish
- * @date: 2024/3/25
+ *
  */
 @Configuration
 public class OpenAPIConfig {

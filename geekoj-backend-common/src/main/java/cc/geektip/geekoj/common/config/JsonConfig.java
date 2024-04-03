@@ -10,7 +10,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 /**
  * @description: Spring MVC Json 配置
  * @author: Fish
- * @date: 2024/3/26
+ *
  */
 @JsonComponent
 public class JsonConfig {

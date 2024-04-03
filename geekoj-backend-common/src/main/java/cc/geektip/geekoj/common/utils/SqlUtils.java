@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * SQL 工具
- *
  */
 public class SqlUtils {
 
@@ -18,6 +17,6 @@ public class SqlUtils {
         if (StringUtils.isBlank(sortField)) {
             return false;
         }
-        return !StringUtils.containsAny(sortField, "=", "(", ")", " ");
+        return !StringUtils.containsAny(sortField, '=', '(', ')', ' ');
     }
 }

@@ -1,27 +1,35 @@
 package cc.geektip.geekoj.api.service.user;
 
-import com.antares.common.model.vo.UserInfoVo;
-import com.antares.member.model.entity.Follow;
-import com.antares.member.model.vo.user.FollowVo;
+import cc.geektip.geekoj.api.model.entity.user.Follow;
+import cc.geektip.geekoj.api.model.vo.user.FollowVo;
+import cc.geektip.geekoj.api.model.vo.user.UserInfoVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
-* @author Antares
+* @author Fish
 * @description 针对表【follow】的数据库操作Service
-* @createDate 2023-05-15 15:15:38
 */
 public interface FollowService extends IService<Follow> {
 
-    void follow(Long uid, HttpServletRequest request);
+    void follow(Long uid);
 
-    List<Long> getFollowIdsOfCurrent(HttpServletRequest request);
+    boolean isFollow(Long uid, Long followId);
 
-    List<FollowVo> getFollowsOfCurrent(HttpServletRequest request);
+    List<Long> getFollowIdsOfCurrent();
 
-    List<UserInfoVo> getFollowsByUid(Long uid, HttpServletRequest request);
+    List<FollowVo> getFollowsOfCurrent();
 
-    List<UserInfoVo> getFansByUid(Long uid, HttpServletRequest request);
+    List<Long> getFollowIdsByUid(Long uid);
+
+    List<UserInfoVo> getFollowsByUid(Long uid);
+
+    List<Long> getFanIdsOfCurrent();
+
+    List<FollowVo> getFansOfCurrent();
+
+    List<Long> getFanIdsByUid(Long uid);
+
+    List<UserInfoVo> getFansByUid(Long uid);
 }

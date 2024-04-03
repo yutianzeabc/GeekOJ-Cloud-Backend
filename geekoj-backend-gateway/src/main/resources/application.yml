@@ -21,10 +21,14 @@ spring:
           uri: lb://geekoj-backend-user-service
           predicates:
             - Path=/api/user/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
         - id: geekoj-backend-question-service
           uri: lb://geekoj-backend-question-service
           predicates:
-            - Path=/api/question/**
+            - Path=/api/oj/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
   main:
     web-application-type: reactive
   data:

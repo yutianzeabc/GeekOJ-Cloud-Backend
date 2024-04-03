@@ -13,11 +13,10 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class QuestionSubmitQueryRequest extends PageRequest implements Serializable {
-
     /**
      * 题目 id
      */
-    private Long problemId;
+    private Long QuestionId;
 
     @Serial
     private static final long serialVersionUID = 1L;

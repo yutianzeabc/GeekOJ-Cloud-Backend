@@ -1,25 +1,29 @@
 package cc.geektip.geekoj.judgeservice.judge.strategy.impl;
 
-import cc.geektip.geekoj.api.codesandbox.vo.JudgeInfo;
-import cc.geektip.geekoj.api.model.dto.question.JudgeCase;
-import cc.geektip.geekoj.api.model.dto.question.JudgeConfig;
-import cc.geektip.geekoj.api.model.entity.problem.Question;
-import cc.geektip.geekoj.api.model.enums.JudgeInfoEnum;
+import cc.geektip.geekoj.api.model.dto.codesandbox.ExecuteCodeResponse;
+import cc.geektip.geekoj.api.model.dto.codesandbox.ExecuteResult;
+import cc.geektip.geekoj.api.model.dto.judge.JudgeCase;
+import cc.geektip.geekoj.api.model.dto.judge.JudgeConfig;
+import cc.geektip.geekoj.api.model.entity.question.Question;
+import cc.geektip.geekoj.api.model.enums.codesandbox.ExecuteCodeStatusEnum;
+import cc.geektip.geekoj.api.model.enums.judge.JudgeInfoEnum;
+import cc.geektip.geekoj.api.model.vo.judge.JudgeInfo;
 import cc.geektip.geekoj.judgeservice.judge.strategy.JudgeContext;
 import cc.geektip.geekoj.judgeservice.judge.strategy.JudgeStrategy;
 import cn.hutool.json.JSONUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @description: Java 语言判题策略，用于定义 Java 语言的判题逻辑
  * @author: Fish
- * @date: 2024/2/29
+ *
  */
 @Component
 public class JavaLanguageJudgeStrategy implements JudgeStrategy {
+
+    private static final long JAVA_PROGRAM_TIME_LIMIT_MULTIPLIER = 2L;
 
     /**
      * 执行判题
@@ -28,51 +32,83 @@ public class JavaLanguageJudgeStrategy implements JudgeStrategy {
      */
     @Override
     public JudgeInfo doJudge(JudgeContext judgeContext) {
-        JudgeInfo judgeInfo = judgeContext.getJudgeInfo();
-        Long memory = Optional.ofNullable(judgeInfo.getMemory()).orElse(0L);
-        Long time = Optional.ofNullable(judgeInfo.getTime()).orElse(0L);
-        List<String> inputList = judgeContext.getInputList();
-        List<String> outputList = judgeContext.getOutputList();
-        Question question = judgeContext.getQuestion();
+        ExecuteCodeResponse response = judgeContext.getExecuteCodeResponse();
         List<JudgeCase> judgeCaseList = judgeContext.getJudgeCaseList();
-        JudgeInfoEnum judgeInfoEnum = JudgeInfoEnum.ACCEPTED;
-        JudgeInfo judgeInfoResponse = new JudgeInfo();
-        judgeInfoResponse.setMemory(memory);
-        judgeInfoResponse.setTime(time);
-        // 先判断沙箱执行的结果输出数量是否和预期输出数量相等
-        if (outputList.size() != inputList.size()) {
-            judgeInfoEnum = JudgeInfoEnum.WRONG_ANSWER;
-            judgeInfoResponse.setMessage(judgeInfoEnum.getValue());
-            return judgeInfoResponse;
-        }
-        // 依次判断每一项输出和预期输出是否相等
-        for (int i = 0; i < judgeCaseList.size(); i++) {
-            JudgeCase judgeCase = judgeCaseList.get(i);
-            if (!judgeCase.getOutput().equals(outputList.get(i))) {
-                judgeInfoEnum = JudgeInfoEnum.WRONG_ANSWER;
-                judgeInfoResponse.setMessage(judgeInfoEnum.getValue());
-                return judgeInfoResponse;
+
+        JudgeInfo judgeInfo = new JudgeInfo();
+        int total = judgeCaseList.size();
+        judgeInfo.setTotal(total);
+
+        if (response.getCode().equals(ExecuteCodeStatusEnum.SUCCESS.getValue())) {
+            List<ExecuteResult> results = response.getResults();
+            List<String> inputList = judgeContext.getInputList();
+            List<String> outputList = results.stream().map(ExecuteResult::getOutput).toList();
+            List<String> expectedOutputList = judgeCaseList.stream().map(JudgeCase::getOutput).toList();
+            Question question = judgeContext.getQuestion();
+            JudgeConfig judgeConfig = JSONUtil.toBean(question.getJudgeConfig(), JudgeConfig.class);
+
+            int pass = 0;
+            long maxTime = 0L;
+            long maxMemory = 0L;
+
+            for (int i = 0; i < total; i++) {
+                // 判断执行时间和内存
+                long time = results.get(i).getTime();
+                long memory = results.get(i).getMemory();
+                maxTime = Math.max(maxTime, time);
+                maxMemory = Math.max(maxMemory, memory);
+                // 判断输出是否正确
+                if (expectedOutputList.get(i).equals(outputList.get(i))) {
+                    // 超时, 乘以 2 是因为 Java 程序的执行时间通常会比较长
+                    if (maxTime > judgeConfig.getTimeLimit() * JAVA_PROGRAM_TIME_LIMIT_MULTIPLIER) {
+                        judgeInfo.setTime(maxTime);
+                        judgeInfo.setMemory(maxMemory);
+                        judgeInfo.setPass(pass);
+                        judgeInfo.setStatus(JudgeInfoEnum.TIME_LIMIT_EXCEEDED.getValue());
+                        judgeInfo.setMessage(JudgeInfoEnum.TIME_LIMIT_EXCEEDED.getText());
+                        break;
+                        // 超内存
+                    } else if (maxMemory > judgeConfig.getMemoryLimit()) {
+                        judgeInfo.setTime(maxTime);
+                        judgeInfo.setMemory(maxMemory);
+                        judgeInfo.setPass(pass);
+                        judgeInfo.setStatus(JudgeInfoEnum.MEMORY_LIMIT_EXCEEDED.getValue());
+                        judgeInfo.setMessage(JudgeInfoEnum.MEMORY_LIMIT_EXCEEDED.getText());
+                        break;
+                    } else {
+                        pass++;
+                    }
+                    // 错误答案
+                } else {
+                    judgeInfo.setPass(pass);
+                    judgeInfo.setTime(maxTime);
+                    judgeInfo.setMemory(maxMemory);
+                    judgeInfo.setStatus(JudgeInfoEnum.WRONG_ANSWER.getValue());
+                    judgeInfo.setMessage(JudgeInfoEnum.WRONG_ANSWER.getText());
+                    judgeInfo.setInput(inputList.get(i));
+                    judgeInfo.setOutput(outputList.get(i));
+                    judgeInfo.setExpectedOutput(expectedOutputList.get(i));
+                    break;
+                }
             }
+            if (pass == total) {
+                judgeInfo.setPass(total);
+                judgeInfo.setTime(maxTime);
+                judgeInfo.setMemory(maxMemory);
+                judgeInfo.setStatus(JudgeInfoEnum.ACCEPTED.getValue());
+                judgeInfo.setMessage(JudgeInfoEnum.ACCEPTED.getText());
+            }
+        } else if (response.getCode().equals(ExecuteCodeStatusEnum.COMPILE_FAILED.getValue())) {
+            judgeInfo.setPass(0);
+            judgeInfo.setStatus(JudgeInfoEnum.COMPILE_ERROR.getValue());
+            judgeInfo.setMessage(JudgeInfoEnum.COMPILE_ERROR.getText() + response.getMsg());
+        } else if (response.getCode().equals(ExecuteCodeStatusEnum.RUN_FAILED.getValue())) {
+            judgeInfo.setPass(0);
+            judgeInfo.setStatus(JudgeInfoEnum.RUNTIME_ERROR.getValue());
+            judgeInfo.setMessage(JudgeInfoEnum.RUNTIME_ERROR.getText() + response.getMsg());
         }
-        // 判断题目限制
-        String judgeConfigStr = question.getJudgeConfig();
-        JudgeConfig judgeConfig = JSONUtil.toBean(judgeConfigStr, JudgeConfig.class);
-        Long needMemoryLimit = judgeConfig.getMemoryLimit();
-        Long needTimeLimit = judgeConfig.getTimeLimit();
-        if (memory > needMemoryLimit) {
-            judgeInfoEnum = JudgeInfoEnum.MEMORY_LIMIT_EXCEEDED;
-            judgeInfoResponse.setMessage(judgeInfoEnum.getValue());
-            return judgeInfoResponse;
-        }
-        // Java 程序本身需要额外执行 10 秒钟
-        long JAVA_PROGRAM_TIME_COST = 10000L;
-        if ((time - JAVA_PROGRAM_TIME_COST) > needTimeLimit) {
-            judgeInfoEnum = JudgeInfoEnum.TIME_LIMIT_EXCEEDED;
-            judgeInfoResponse.setMessage(judgeInfoEnum.getValue());
-            return judgeInfoResponse;
-        }
-        judgeInfoResponse.setMessage(judgeInfoEnum.getValue());
-        return judgeInfoResponse;
+
+        return judgeInfo;
     }
 
 }

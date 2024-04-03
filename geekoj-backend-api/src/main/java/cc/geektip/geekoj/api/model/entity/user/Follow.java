@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 
+ *
  * @TableName follow
  */
 @TableName(value ="follow")

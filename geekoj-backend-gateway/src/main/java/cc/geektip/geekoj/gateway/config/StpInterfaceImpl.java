@@ -1,6 +1,6 @@
 package cc.geektip.geekoj.gateway.config;
 
-import cc.geektip.geekoj.api.model.vo.LoginUserVO;
+import cc.geektip.geekoj.api.model.vo.user.UserInfoVo;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpInterface;
 import cn.dev33.satoken.stp.StpUtil;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @description: Sa-Token 权限验证接口实现类
  * @author: Fish
- * @date: 2024/3/27
+ *
  */
 
 @Slf4j
@@ -28,7 +28,7 @@ public class StpInterfaceImpl implements StpInterface {
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
         try {
-            LoginUserVO loginUserVO = StpUtil.getSessionByLoginId(loginId).getModel(SaSession.USER, LoginUserVO.class);
+            UserInfoVo loginUserVO = StpUtil.getSessionByLoginId(loginId).getModel(SaSession.USER, UserInfoVo.class);
             return List.of(loginUserVO.getUserRole());
         } catch (Exception e) {
             log.error("获取角色列表失败", e);

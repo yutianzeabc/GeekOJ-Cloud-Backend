@@ -1,5 +1,6 @@
 package cc.geektip.geekoj.api.model.dto.question;
 
+
 import cc.geektip.geekoj.common.common.PageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +11,6 @@ import java.util.List;
 
 /**
  * 查询请求
- *
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

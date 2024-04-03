@@ -1,20 +1,18 @@
 package cc.geektip.geekoj.judgeservice.judge.codesandbox.impl;
 
-import cc.geektip.geekoj.api.codesandbox.dto.ExecuteCodeRequest;
-import cc.geektip.geekoj.api.codesandbox.dto.ExecuteCodeResponse;
+import cc.geektip.geekoj.api.model.dto.codesandbox.ExecuteCodeRequest;
+import cc.geektip.geekoj.api.model.dto.codesandbox.ExecuteCodeResponse;
 import cc.geektip.geekoj.judgeservice.client.RemoteCodeSandboxClient;
 import cc.geektip.geekoj.judgeservice.judge.codesandbox.CodeSandbox;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.Resource;
-
-
 /**
  * @description: 远程代码沙箱
  * @author: Fish
- * @date: 2024/2/28
+ *
  */
 @Slf4j
 @Component

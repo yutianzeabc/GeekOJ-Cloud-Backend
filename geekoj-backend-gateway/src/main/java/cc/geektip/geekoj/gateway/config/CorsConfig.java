@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @description: CORS Config
  * @author: Fish
- * @date: 2024/3/16
+ *
  */
 @Data
 @Configuration

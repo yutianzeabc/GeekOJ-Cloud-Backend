@@ -3,11 +3,13 @@ package cc.geektip.geekoj.api.model.dto.user;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+
+import java.io.Serializable;
 
 @Data
-public class UserRegisterRequest {
+public class UserRegisterRequest implements Serializable {
     @Length(min = 6,max = 18,message = "密码必须是6—18位字符")
     private String password;
 

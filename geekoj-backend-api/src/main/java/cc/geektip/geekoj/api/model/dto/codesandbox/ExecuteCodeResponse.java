@@ -1,12 +1,10 @@
 package cc.geektip.geekoj.api.model.dto.codesandbox;
 
-import cc.geektip.geekoj.api.model.codesandbox.JudgeInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -18,18 +16,17 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExecuteCodeResponse implements Serializable {
-    private List<String> outputList;
+public class ExecuteCodeResponse {
     /**
-     * 接口信息
+     * 执行信息
      */
-    private String message;
+    private String msg;
     /**
      * 执行状态
      */
-    private Integer status;
+    private Integer code;
     /**
-     * 评测信息
+     * 执行结果
      */
-    private JudgeInfo judgeInfo;
+    private List<ExecuteResult> results;
 }

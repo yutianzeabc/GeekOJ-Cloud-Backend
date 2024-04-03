@@ -5,12 +5,13 @@ import lombok.Getter;
 /**
  * @description: 判题策略枚举类
  * @author: Fish
- * @date: 2024/2/29
+ *
  */
 @Getter
 public enum JudgeStrategyEnum {
     DEFAULT("default"),
     JAVA("java"),
+    GO("go"),
     CPP("cpp");
 
     final String value;

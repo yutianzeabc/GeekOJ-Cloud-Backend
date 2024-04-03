@@ -37,6 +37,25 @@ spring:
       port: 6379
       timeout: 5000
       password: geektip
+  mail:
+    host: smtp.qq.com
+    username: geekoj@foxmail.com
+    password: eivxpztiwqfvdiid
+    port: 587
+    default-encoding: UTF-8
+    protocol: smtp # 协议
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+          port: ${spring.mail.port}
+          auth: true
+          starttls:
+            enable: true
+            required: true
   cloud:
     nacos:
       discovery:
@@ -44,6 +63,10 @@ spring:
       server-addr: link:8848
       username: nacos
       password: nacos
+rocketmq:
+  producer:
+    group: geekoj
+  name-server: link:9876
 dubbo:
   application:
     name: GeekOJ
@@ -67,17 +90,40 @@ server:
         path: /api
 mybatis-plus:
   configuration:
-    map-underscore-to-camel-case: false
+    map-underscore-to-camel-case: true
   global-config:
     db-config:
       logic-delete-field: isDelete # 全局逻辑删除的实体字段名
       logic-delete-value: 1 # 逻辑已删除值（默认为 1）
       logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
+      id-type: auto
 sa-token:
   # 打开 RPC 调用鉴权
   check-same-token: true
   is-log: true
 
+geekoj:
+  thread-pool:
+    core-size: 20
+    max-size: 200
+    keep-alive-time: 10
+  third-party:
+    sms:
+      apiUrl:
+      appId:
+      appSecret:
+      templateId:
+    oss:
+      accessKey:
+      secretKey:
+      bucket:
+      domain:
+    oauth:
+      gitee:
+        client_id:
+        client_secret:
+        grant_type:
+        redirect_uri:
 # 新版本3.0接口文档配置
 springdoc:
   info:

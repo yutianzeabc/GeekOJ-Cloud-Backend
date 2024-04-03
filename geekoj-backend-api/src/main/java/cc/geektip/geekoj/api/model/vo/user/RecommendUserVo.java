@@ -1,10 +1,13 @@
 package cc.geektip.geekoj.api.model.vo.user;
 
-import com.antares.common.model.vo.UserInfoVo;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Data
-public class RecommendUserVo {
+@NoArgsConstructor
+public class RecommendUserVo implements Serializable {
     private UserInfoVo userInfo;
     private Double score;
 }

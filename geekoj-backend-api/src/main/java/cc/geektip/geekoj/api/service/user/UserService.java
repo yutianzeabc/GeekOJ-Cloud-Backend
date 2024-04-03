@@ -1,58 +1,50 @@
 package cc.geektip.geekoj.api.service.user;
 
-import com.antares.common.exception.BusinessException;
-import com.antares.common.model.dto.UsernameAndAvtarDto;
-import com.antares.common.model.vo.UserInfoVo;
-import com.antares.member.model.dto.user.*;
-import com.antares.member.model.entity.User;
-import com.antares.member.model.vo.user.RecommendUserVo;
-import com.antares.member.model.vo.user.SocialUser;
+import cc.geektip.geekoj.api.model.dto.user.*;
+import cc.geektip.geekoj.api.model.entity.user.User;
+import cc.geektip.geekoj.api.model.vo.user.RecommendUserVo;
+import cc.geektip.geekoj.api.model.vo.user.SocialUser;
+import cc.geektip.geekoj.api.model.vo.user.UserInfoVo;
+import cc.geektip.geekoj.common.exception.BusinessException;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author antares
- * @email 1716607668@qq.com
- * @date 2023-03-02 00:19:13
+ * @author Fish
+ * @description 针对表【user】的数据库操作Service
+ *
  */
 public interface UserService extends IService<User> {
     void sendCode(String dest, int type);
 
     void register(UserRegisterRequest userRegisterRequest);
 
-    void checkPhoneUnique(String phone) throws BusinessException;
+    void login(AccountLoginRequest accountLoginRequest);
 
-    void checkUsernameUnique(String username) throws BusinessException;
+    void logout();
 
-    void checkEmailUnique(String email) throws BusinessException;
+    void oauthLogin(SocialUser socialUser) throws BusinessException;
 
-    void login(AccountLoginRequest accountLoginRequest, HttpServletResponse response);
+    UserInfoVo getCurrentUser();
 
-    void oauthLogin(SocialUser socialUser, HttpServletResponse response) throws IOException;
+    void updateCurrentUserInfo(UserUpdateRequest request);
 
-    UserInfoVo getCurrentUser(HttpServletRequest request);
+    void updatePwd(PwdUpdateRequest pwdUpdateRequest);
 
-    void updateCurrentUserInfo(UserUpdateRequest updateVo, HttpServletRequest request);
+    void bindPhone(String phone, String code);
 
-    void updatePwd(PwdUpdateRequest pwdUpdateRequest, HttpServletRequest request);
+    void updateMail(String mail, String code);
 
-    void bindPhone(String phone, String code, HttpServletRequest request);
+    void loginByPhone(PhoneLoginRequest request);
 
-    void updateMail(String mail, String code, HttpServletRequest request);
+    UserInfoVo getUserByUid(Long uid);
 
-    void loginByPhone(PhoneLoginRequest vo, HttpServletResponse response);
+    List<UserInfoVo> getUserListByUids(List<Long> uids);
 
-    UserInfoVo getUserByUid(Long uid, HttpServletRequest request);
-
-    List<UserInfoVo> getUserListByUids(List<Long> uids, HttpServletRequest request);
-
-    List<RecommendUserVo> getRecommendUsers(HttpServletRequest request);
+    List<RecommendUserVo> getRecommendUsers();
 
     /**
      * 获取推荐用户，并将推荐用户uid缓存到redis
@@ -62,7 +54,7 @@ public interface UserService extends IService<User> {
      * @param loopCount 循环次数，超出这个次数还没找到8个相似度超过阈值的，余下的随机填充
      * @return uid和score组成的hashmap
      */
-    Map<String, Double> getRecommendUserIdsAndCache(Long uid, String tags, int tagCount, int loopCount);
+    Map<String, Double> getAndCacheRecommendUserIds(Long uid, String tags, int tagCount, int loopCount);
 
     /**
      * 获取随机推荐用户，并将推荐用户uid缓存到redis（为未登录用户定制）
@@ -70,12 +62,23 @@ public interface UserService extends IService<User> {
      * @param loopCount 循环次数，超出这个次数还没找到8个相似度超过阈值的，余下的随机填充
      * @return uid和score组成的hashmap
      */
-    Map<String, Double> getRandomUserIdsAndCache(int tagCount, int loopCount);
+    Map<String, Double> getAndCacheRandomUserIds(int tagCount, int loopCount);
 
-    List<RecommendUserVo> refreshRecommendUsers(HttpServletRequest request);
+    List<RecommendUserVo> refreshRecommendUsers();
 
-    List<UsernameAndAvtarDto> listUserNameAndAvatarByUids(Collection<Long> uids);
+    List<UsernameAndAvatarDto> listUserNameAndAvatarByUids(Collection<Long> uids);
 
-    UsernameAndAvtarDto getUsernameAndAvatar(Long uid);
+    UsernameAndAvatarDto getUsernameAndAvatar(Long uid);
+
+    List<RecommendUserVo> getRecommendUserVoList(List<Long> recommendUids, List<Double> scores);
+
+    void incrFollowsCount(Long uid);
+
+    void decrFollowsCount(Long uid);
+
+    void incrFansCount(Long uid);
+
+    void decrFansCount(Long uid);
+
 }
 

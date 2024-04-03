@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 /**
  * @description: Sa-Token 配置类
  * @author: Fish
- * @date: 2024/3/17
+ *
  */
 @Configuration
 public class SaTokenConfig {

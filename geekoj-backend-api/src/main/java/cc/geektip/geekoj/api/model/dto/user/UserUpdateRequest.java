@@ -2,10 +2,11 @@ package cc.geektip.geekoj.api.model.dto.user;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class UserUpdateRequest {
+public class UserUpdateRequest implements Serializable {
     private Long uid;
     private String username;
     private String password;

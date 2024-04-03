@@ -1,6 +1,6 @@
 package cc.geektip.geekoj.common.exception;
 
-import cc.geektip.geekoj.common.common.ErrorCode;
+import cc.geektip.geekoj.common.common.AppHttpCodeEnum;
 
 /**
  * 异常抛出工具类
@@ -24,20 +24,19 @@ public class ThrowUtils {
      * 条件成立则抛异常
      *
      * @param condition
-     * @param errorCode
+     * @param appHttpCodeEnum
      */
-    public static void throwIf(boolean condition, ErrorCode errorCode) {
-        throwIf(condition, new BusinessException(errorCode));
+    public static void throwIf(boolean condition, AppHttpCodeEnum appHttpCodeEnum) {
+        throwIf(condition, new BusinessException(appHttpCodeEnum));
     }
 
     /**
      * 条件成立则抛异常
-     *
      * @param condition
-     * @param errorCode
-     * @param message
+     * @param appHttpCodeEnum
+     * @param msg
      */
-    public static void throwIf(boolean condition, ErrorCode errorCode, String message) {
-        throwIf(condition, new BusinessException(errorCode, message));
+    public static void throwIf(boolean condition, AppHttpCodeEnum appHttpCodeEnum, String msg) {
+        throwIf(condition, new BusinessException(appHttpCodeEnum, msg));
     }
 }

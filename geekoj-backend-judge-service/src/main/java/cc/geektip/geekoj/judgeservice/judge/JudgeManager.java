@@ -1,7 +1,7 @@
 package cc.geektip.geekoj.judgeservice.judge;
 
-import cc.geektip.geekoj.api.codesandbox.vo.JudgeInfo;
-import cc.geektip.geekoj.api.model.entity.problem.QuestionSubmit;
+import cc.geektip.geekoj.api.model.entity.question.QuestionSubmit;
+import cc.geektip.geekoj.api.model.vo.judge.JudgeInfo;
 import cc.geektip.geekoj.judgeservice.judge.strategy.JudgeContext;
 import cc.geektip.geekoj.judgeservice.judge.strategy.JudgeStrategy;
 import cc.geektip.geekoj.judgeservice.judge.strategy.JudgeStrategyRegistry;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 /**
  * @description: 判题管理器，用于管理判题服务和判题策略，单例
  * @author: Fish
- * @date: 2024/2/29
+ *
  */
 @Service
 public class JudgeManager {

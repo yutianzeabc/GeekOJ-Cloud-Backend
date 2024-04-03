@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @description: MyBatis Plus 配置类
  * @author: Fish
- * @date: 2024/3/26
+ *
  */
 @Configuration
 public class MyBatisPlusConfig {

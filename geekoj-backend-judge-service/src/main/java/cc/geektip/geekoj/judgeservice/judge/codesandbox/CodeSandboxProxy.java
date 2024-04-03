@@ -1,13 +1,13 @@
 package cc.geektip.geekoj.judgeservice.judge.codesandbox;
 
-import cc.geektip.geekoj.api.codesandbox.dto.ExecuteCodeRequest;
-import cc.geektip.geekoj.api.codesandbox.dto.ExecuteCodeResponse;
+import cc.geektip.geekoj.api.model.dto.codesandbox.ExecuteCodeRequest;
+import cc.geektip.geekoj.api.model.dto.codesandbox.ExecuteCodeResponse;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * @description: 代码沙箱代理
  * @author: Fish
- * @date: 2024/2/28
+ *
  */
 @Slf4j
 public class CodeSandboxProxy implements CodeSandbox {

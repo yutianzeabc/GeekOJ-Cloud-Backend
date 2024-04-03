@@ -1,11 +1,13 @@
 package cc.geektip.geekoj.common.exception;
-
+import cc.geektip.geekoj.common.common.AppHttpCodeEnum;
 import cc.geektip.geekoj.common.common.ErrorCode;
+import lombok.Getter;
 
 /**
  * 自定义异常类
  *
  */
+@Getter
 public class BusinessException extends RuntimeException {
 
     /**
@@ -18,9 +20,9 @@ public class BusinessException extends RuntimeException {
         this.code = code;
     }
 
-    public BusinessException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.code = errorCode.getCode();
+    public BusinessException(AppHttpCodeEnum httpCodeEnum) {
+        super(httpCodeEnum.getMsg());
+        this.code = httpCodeEnum.getCode();
     }
 
     public BusinessException(ErrorCode errorCode, String message) {
@@ -28,7 +30,9 @@ public class BusinessException extends RuntimeException {
         this.code = errorCode.getCode();
     }
 
-    public int getCode() {
-        return code;
+    public BusinessException(AppHttpCodeEnum httpCodeEnum, String msg) {
+        super(httpCodeEnum.getMsg()+": "+msg);
+        this.code = httpCodeEnum.getCode();
     }
+
 }
