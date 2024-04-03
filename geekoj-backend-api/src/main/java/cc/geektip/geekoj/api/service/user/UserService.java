@@ -2,15 +2,12 @@ package cc.geektip.geekoj.api.service.user;
 
 import cc.geektip.geekoj.api.model.dto.user.*;
 import cc.geektip.geekoj.api.model.entity.user.User;
-import cc.geektip.geekoj.api.model.vo.user.RecommendUserVo;
 import cc.geektip.geekoj.api.model.vo.user.SocialUser;
 import cc.geektip.geekoj.api.model.vo.user.UserInfoVo;
 import cc.geektip.geekoj.common.exception.BusinessException;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Fish
@@ -28,9 +25,7 @@ public interface UserService extends IService<User> {
 
     void oauthLogin(SocialUser socialUser) throws BusinessException;
 
-    UserInfoVo getCurrentUser();
-
-    void updateCurrentUserInfo(UserUpdateRequest request);
+    void updateCurrentUser(UserUpdateRequest request);
 
     void updatePwd(PwdUpdateRequest pwdUpdateRequest);
 
@@ -40,37 +35,11 @@ public interface UserService extends IService<User> {
 
     void loginByPhone(PhoneLoginRequest request);
 
+    UserInfoVo getCurrentUser();
+
     UserInfoVo getUserByUid(Long uid);
 
     List<UserInfoVo> getUserListByUids(List<Long> uids);
-
-    List<RecommendUserVo> getRecommendUsers();
-
-    /**
-     * 获取推荐用户，并将推荐用户uid缓存到redis
-     * @param uid 当前uid
-     * @param tags 当前tags
-     * @param tagCount userTag总数
-     * @param loopCount 循环次数，超出这个次数还没找到8个相似度超过阈值的，余下的随机填充
-     * @return uid和score组成的hashmap
-     */
-    Map<String, Double> getAndCacheRecommendUserIds(Long uid, String tags, int tagCount, int loopCount);
-
-    /**
-     * 获取随机推荐用户，并将推荐用户uid缓存到redis（为未登录用户定制）
-     * @param tagCount userTag总数
-     * @param loopCount 循环次数，超出这个次数还没找到8个相似度超过阈值的，余下的随机填充
-     * @return uid和score组成的hashmap
-     */
-    Map<String, Double> getAndCacheRandomUserIds(int tagCount, int loopCount);
-
-    List<RecommendUserVo> refreshRecommendUsers();
-
-    List<UsernameAndAvatarDto> listUserNameAndAvatarByUids(Collection<Long> uids);
-
-    UsernameAndAvatarDto getUsernameAndAvatar(Long uid);
-
-    List<RecommendUserVo> getRecommendUserVoList(List<Long> recommendUids, List<Double> scores);
 
     void incrFollowsCount(Long uid);
 

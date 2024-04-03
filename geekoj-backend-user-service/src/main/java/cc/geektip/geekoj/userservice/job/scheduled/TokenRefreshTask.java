@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
  * @author: Fish
  *
  */
-public class TokenRefreshJob {
+public class TokenRefreshTask {
     /**
      * 定时刷新子服务之间调用令牌
      */

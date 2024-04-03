@@ -2,7 +2,6 @@ package cc.geektip.geekoj.userservice.controller;
 
 import cc.geektip.geekoj.api.model.dto.user.PwdUpdateRequest;
 import cc.geektip.geekoj.api.model.dto.user.UserUpdateRequest;
-import cc.geektip.geekoj.api.model.vo.user.RecommendUserVo;
 import cc.geektip.geekoj.api.model.vo.user.UserInfoVo;
 import cc.geektip.geekoj.api.service.user.UserService;
 import cc.geektip.geekoj.common.common.R;
@@ -12,8 +11,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/")
@@ -41,7 +38,7 @@ public class UserController {
      */
     @PostMapping("/update")
     public R update(@RequestBody UserUpdateRequest updateVo){
-        userService.updateCurrentUserInfo(updateVo);
+        userService.updateCurrentUser(updateVo);
         return R.ok();
     }
 
@@ -91,25 +88,5 @@ public class UserController {
     public R<UserInfoVo> info(@PathVariable("uid") Long uid){
         UserInfoVo userByUid = userService.getUserByUid(uid);
         return R.ok(userByUid);
-    }
-
-    /**
-     * 获取标签相似的推荐用户
-     * @return
-     */
-    @GetMapping("/recommend")
-    public R<List<RecommendUserVo>> getRecommendUsers(){
-        List<RecommendUserVo> recommendUsers = userService.getRecommendUsers();
-        return R.ok(recommendUsers);
-    }
-
-    /**
-     * 刷新推荐用户
-     * @return
-     */
-    @GetMapping("/recommend/refresh")
-    public R<List<RecommendUserVo>> refreshRecommendUsers(){
-        List<RecommendUserVo> recommendUsers = userService.refreshRecommendUsers();
-        return R.ok(recommendUsers);
     }
 }

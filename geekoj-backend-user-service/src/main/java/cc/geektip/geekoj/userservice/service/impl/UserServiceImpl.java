@@ -2,19 +2,21 @@ package cc.geektip.geekoj.userservice.service.impl;
 
 import cc.geektip.geekoj.api.model.dto.user.*;
 import cc.geektip.geekoj.api.model.entity.user.User;
-import cc.geektip.geekoj.api.model.vo.user.*;
+import cc.geektip.geekoj.api.model.enums.user.UserRoleEnum;
+import cc.geektip.geekoj.api.model.vo.user.GiteeUser;
+import cc.geektip.geekoj.api.model.vo.user.SocialUser;
+import cc.geektip.geekoj.api.model.vo.user.UserInfoVo;
+import cc.geektip.geekoj.api.model.vo.user.UserTagVo;
 import cc.geektip.geekoj.api.service.user.FollowService;
 import cc.geektip.geekoj.api.service.user.UserService;
 import cc.geektip.geekoj.api.service.user.UserTagService;
 import cc.geektip.geekoj.common.common.AppHttpCodeEnum;
 import cc.geektip.geekoj.common.constant.RedisConstant;
-import cc.geektip.geekoj.common.constant.SystemConstant;
 import cc.geektip.geekoj.common.exception.BusinessException;
 import cc.geektip.geekoj.common.utils.BeanCopyUtils;
 import cc.geektip.geekoj.common.utils.HttpUtils;
 import cc.geektip.geekoj.userservice.mapper.UserMapper;
 import cc.geektip.geekoj.userservice.mq.SendCodeMQProducer;
-import cc.geektip.geekoj.userservice.utils.AlgorithmUtils;
 import cc.geektip.geekoj.userservice.utils.SessionUtil;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
@@ -26,24 +28,21 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import static cc.geektip.geekoj.common.constant.SystemConstant.*;
+import static cc.geektip.geekoj.common.constant.SystemConstant.PHONE_CODE;
+import static cc.geektip.geekoj.common.constant.SystemConstant.USERNAME_PREFIX;
 
 /**
  * @description: 用户服务实现类
@@ -228,10 +227,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public void updateCurrentUserInfo(UserUpdateRequest updateVo) {
+    public void updateCurrentUser(UserUpdateRequest updateVo) {
         // 当前用户只允许修改自己的信息，管理员可以修改任何用户的信息
         Long currentUid = sessionUtil.getCurrentUserId();
-        if (!currentUid.equals(updateVo.getUid()) && !StpUtil.hasRole("admin")) {
+        if (!currentUid.equals(updateVo.getUid()) && !StpUtil.hasRole(UserRoleEnum.ADMIN.getValue())) {
             throw new BusinessException(AppHttpCodeEnum.NO_AUTH);
         }
         // 更新数据库
@@ -356,135 +355,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         List<User> users = listByIds(uids);
         return users.parallelStream().map(this::objToVo).toList();
-    }
-
-    @Override
-    public List<RecommendUserVo> getRecommendUsers() {
-        UserInfoVo userInfoVo = sessionUtil.getCurrentUser();
-        long uid = userInfoVo == null ? -1L : userInfoVo.getUid();
-
-        String redisUserRecommendKey = RedisConstant.USER_RECOMMEND_PREFIX + uid;
-
-        // 1. 从缓存中获取推荐用户
-        final double minScore = 0;
-        final double maxScore = 1;
-        Set<ZSetOperations.TypedTuple<String>> userRecommendSet = stringRedisTemplate.opsForZSet().rangeByScoreWithScores(redisUserRecommendKey, minScore, maxScore);
-        if (userRecommendSet.isEmpty()) {
-            // 2. 缓存中没有则重新计算
-            return refreshRecommendUsers();
-        }
-        // 3. 缓存中有则直接返回
-        List<Long> recommendUids = userRecommendSet.stream().map(typedTuple -> Long.parseLong(typedTuple.getValue())).toList();
-        List<Double> scores = userRecommendSet.stream().map(ZSetOperations.TypedTuple::getScore).toList();
-        return getRecommendUserVoList(recommendUids, scores);
-    }
-
-    private void cacheRecommendUids(Long uid, Map<String, Double> result) {
-        // 执行缓存逻辑
-        stringRedisTemplate.executePipelined((RedisCallback<Object>) connection -> {
-            byte[] RedisUserRecommendKeyBytes = stringRedisTemplate.getStringSerializer().serialize(RedisConstant.USER_RECOMMEND_PREFIX + uid);
-            connection.keyCommands().del(RedisUserRecommendKeyBytes);
-            result.forEach((key, value) -> {
-                byte[] RedisUserRecommendValueBytes = stringRedisTemplate.getStringSerializer().serialize(key);
-                connection.zAdd(RedisUserRecommendKeyBytes, value, RedisUserRecommendValueBytes);
-            });
-            connection.keyCommands().expire(RedisUserRecommendKeyBytes, 172800);
-            return null;
-        });
-    }
-
-    @Override
-    public Map<String, Double> getAndCacheRecommendUserIds(Long uid, String tags, int tagCount, int loopCount) {
-        // 1. 如果用户没有标签则直接返回空
-        if (tags.equals("[]")) return Collections.emptyMap();
-
-        // 2. 从数据库中获取推荐用户
-        Map<String, Double> result = new ConcurrentHashMap<>();
-        for (int i = 0; i < loopCount && result.size() < SystemConstant.RECOMMEND_SIZE; i++) {
-            List<User> randomRecommend = baseMapper.getRandomRecommend(uid, SystemConstant.RANDOM_RECOMMEND_BATCH_SIZE);
-            randomRecommend.parallelStream().forEach(recommendUser -> {
-                double score = AlgorithmUtils.calculate(tags, recommendUser.getTags(), tagCount);
-                if (score > SystemConstant.RECOMMEND_THRESHOLD && result.size() < SystemConstant.RECOMMEND_SIZE) {
-                    result.put(recommendUser.getUid().toString(), score);
-                }
-            });
-        }
-
-        // 3. 如果推荐用户不足则随机推荐
-        if (result.size() < SystemConstant.RECOMMEND_SIZE) {
-            List<User> randomRecommends = baseMapper.getRandomRecommend(uid, SystemConstant.RECOMMEND_SIZE - result.size());
-            randomRecommends.parallelStream().forEach(recommendUser -> {
-                double score = AlgorithmUtils.calculate(tags, recommendUser.getTags(), tagCount);
-                result.put(recommendUser.getUid().toString(), score);
-            });
-        }
-
-        // 4. 缓存推荐用户
-        cacheRecommendUids(uid, result);
-
-        return result;
-    }
-
-    @Override
-    public Map<String, Double> getAndCacheRandomUserIds(int tagCount, int loopCount) {
-        Map<String, Double> result = new HashMap<>();
-
-        List<User> randomRecommendUsers = getBaseMapper().getRandom(SystemConstant.RECOMMEND_SIZE);
-        randomRecommendUsers.forEach(user -> result.put(String.valueOf(user.getUid()), 0D));
-        // 缓存推荐用户
-        cacheRecommendUids(-1L, result);
-        return result;
-    }
-
-    @Override
-    public List<RecommendUserVo> refreshRecommendUsers() {
-        UserInfoVo userInfoVo = sessionUtil.getCurrentUser();
-
-        long tagCount = userTagService.count();
-        long userCount = this.count();
-        long loopCount = Math.max(1, userCount / SystemConstant.RANDOM_RECOMMEND_BATCH_SIZE);
-
-        Map<String, Double> recommendUserScoreMap;
-        if (userInfoVo == null) {
-            recommendUserScoreMap = getAndCacheRandomUserIds(Math.toIntExact(tagCount), Math.toIntExact(loopCount));
-        } else {
-            List<Long> tagIds = userInfoVo.getTags().stream().map(UserTagVo::getId).collect(Collectors.toList());
-            recommendUserScoreMap = getAndCacheRecommendUserIds(userInfoVo.getUid(), JSON.toJSONString(tagIds), Math.toIntExact(tagCount), Math.toIntExact(loopCount));
-        }
-        //首先要按照分数排序
-        List<ImmutablePair<Long, Double>> pairs = recommendUserScoreMap.entrySet().stream()
-                .sorted((entry1, entry2) -> (int) (10000 * entry2.getValue() - 10000 * entry1.getValue())) // 降序
-                .map(entry -> new ImmutablePair<>(Long.valueOf(entry.getKey()), entry.getValue()))
-                .toList();
-        List<Long> recommendUids = pairs.stream().map(ImmutablePair::getKey).toList();
-        List<Double> scores = pairs.stream().map(ImmutablePair::getValue).toList();
-        return getRecommendUserVoList(recommendUids, scores);
-    }
-
-
-    @Override
-    public List<RecommendUserVo> getRecommendUserVoList(List<Long> recommendUids, List<Double> scores) {
-        List<UserInfoVo> vos = getUserListByUids(recommendUids);
-        return IntStream.range(0, recommendUids.size())
-                .mapToObj(i -> {
-                    RecommendUserVo recommendUserVo = new RecommendUserVo();
-                    recommendUserVo.setScore(scores.get(i) * 100);
-                    recommendUserVo.setUserInfo(vos.get(i));
-                    return recommendUserVo;
-                }).toList();
-    }
-
-    public List<UsernameAndAvatarDto> listUserNameAndAvatarByUids(Collection<Long> uids) {
-        if (uids.isEmpty()) {
-            return new ArrayList<>();
-        }
-        List<User> users = lambdaQuery().select(User::getUid, User::getUsername, User::getAvatar).in(User::getUid, uids).list();
-        return users.stream().map(user -> BeanCopyUtils.copyBean(user, UsernameAndAvatarDto.class)).toList();
-    }
-
-    public UsernameAndAvatarDto getUsernameAndAvatar(Long uid) {
-        User user = lambdaQuery().select(User::getUid, User::getUsername, User::getAvatar).eq(User::getUid, uid).one();
-        return BeanCopyUtils.copyBean(user, UsernameAndAvatarDto.class);
     }
 
     @Override
