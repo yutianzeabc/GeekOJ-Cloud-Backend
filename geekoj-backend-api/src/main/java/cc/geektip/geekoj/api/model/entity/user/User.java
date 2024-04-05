@@ -34,6 +34,9 @@ public class User implements Serializable {
      */
     private String userRole;
 
+    /**
+     * 用户AK/SK
+     */
     private String accessKey;
     private String secretKey;
 
@@ -77,10 +80,6 @@ public class User implements Serializable {
      */
     private Integer fans;
 
-    /**
-     * 博客/动态
-     */
-    private Integer topic;
 
     /**
      * 第三方id

@@ -19,7 +19,6 @@
         <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
         <result property="follow" column="follow" jdbcType="INTEGER"/>
         <result property="fans" column="fans" jdbcType="INTEGER"/>
-        <result property="topic" column="topic" jdbcType="INTEGER"/>
         <result property="socialUid" column="social_uid" jdbcType="VARCHAR"/>
         <result property="accessToken" column="access_token" jdbcType="VARCHAR"/>
         <result property="expiresIn" column="expires_in" jdbcType="VARCHAR"/>
@@ -32,7 +31,7 @@
         uid,username,password,user_role,access_key,secret_key,
         tags,signature,email,
         phone,sex,avatar,
-        follow,fans,topic,
+        follow,fans,
         social_uid,access_token,expires_in,
         create_time,update_time,is_delete
     </sql>

@@ -1,10 +1,11 @@
 package cc.geektip.geekoj.userservice.mq;
 
 import cc.geektip.geekoj.api.model.entity.user.Follow;
-import cc.geektip.geekoj.common.constant.MqConstant;
 import jakarta.annotation.Resource;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.stereotype.Component;
+
+import static cc.geektip.geekoj.common.constant.MqConstant.TOPIC_FOLLOW;
 
 /**
  * @description: 关注消息生产者
@@ -22,6 +23,6 @@ public class FollowMQProducer {
      * @param follow 关注实体
      */
     public void sendFollowMessage(Follow follow) {
-        rocketMQTemplate.convertAndSend(MqConstant.TOPIC_FOLLOW, follow);
+        rocketMQTemplate.convertAndSend(TOPIC_FOLLOW, follow);
     }
 }

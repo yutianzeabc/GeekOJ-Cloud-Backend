@@ -5,9 +5,6 @@ package cc.geektip.geekoj.common.constant;
  *
  */
 public interface UserConstant {
-
-    //  region 权限
-
     /**
      * 默认角色
      */
@@ -22,6 +19,4 @@ public interface UserConstant {
      * 被封号
      */
     String BAN_ROLE = "ban";
-
-    // endregion
 }

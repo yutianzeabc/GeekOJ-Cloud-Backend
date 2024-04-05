@@ -32,4 +32,6 @@ public interface FollowService extends IService<Follow> {
     List<Long> getFanIdsByUid(Long uid);
 
     List<UserInfoVo> getFansByUid(Long uid);
+
+    void removeByUidPair(Long uid, Long followUid);
 }

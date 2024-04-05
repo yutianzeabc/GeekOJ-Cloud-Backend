@@ -12,7 +12,7 @@ import cc.geektip.geekoj.api.service.question.QuestionSubmitService;
 import cc.geektip.geekoj.common.constant.CommonConstant;
 import cc.geektip.geekoj.common.utils.SqlUtils;
 import cc.geektip.geekoj.questionservice.mapper.QuestionMapper;
-import cc.geektip.geekoj.questionservice.utils.SessionUtil;
+import cc.geektip.geekoj.questionservice.utils.SessionUtils;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -22,6 +22,7 @@ import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.List;
 import java.util.Set;
@@ -32,12 +33,11 @@ import java.util.stream.Collectors;
  */
 @DubboService
 public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> implements QuestionService {
-
     @Resource
-    private SessionUtil sessionUtil;
-
-    @Resource
+    @Lazy
     private QuestionSubmitService questionSubmitService;
+    @Resource
+    private SessionUtils sessionUtils;
 
     /**
      * 获取查询包装类
@@ -62,7 +62,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
 
         UserQuestionStatusEnum statusEnum = UserQuestionStatusEnum.getEnumByText(status);
         if (statusEnum != null && !statusEnum.equals(UserQuestionStatusEnum.ALL)) {
-            Long currentUid = sessionUtil.getCurrentUserId();
+            Long currentUid = sessionUtils.getCurrentUserId();
             Set<Long> passedIds;
             Set<Long> triedIds;
 

@@ -1,6 +1,6 @@
 package cc.geektip.geekoj.userservice;
 
-import cc.geektip.geekoj.userservice.utils.MailUtil;
+import cc.geektip.geekoj.userservice.utils.MailUtils;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class GeekojUserServiceApplicationTests {
 
     @Resource
-    MailUtil mailUtil;
+    MailUtils mailUtil;
 
     @Test
     void contextLoads() {

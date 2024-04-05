@@ -11,11 +11,11 @@ import cc.geektip.geekoj.api.model.vo.question.QuestionVo;
 import cc.geektip.geekoj.api.model.vo.question.SafeQuestionVo;
 import cc.geektip.geekoj.api.model.vo.user.UserInfoVo;
 import cc.geektip.geekoj.api.service.question.QuestionService;
-import cc.geektip.geekoj.api.service.user.UserService;
 import cc.geektip.geekoj.common.common.AppHttpCodeEnum;
 import cc.geektip.geekoj.common.common.R;
 import cc.geektip.geekoj.common.constant.UserConstant;
 import cc.geektip.geekoj.common.exception.ThrowUtils;
+import cc.geektip.geekoj.questionservice.utils.SessionUtils;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -25,7 +25,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -42,8 +41,8 @@ import java.util.List;
 public class QuestionController {
     @Resource
     private QuestionService questionService;
-    @DubboReference
-    private UserService userService;
+    @Resource
+    private SessionUtils sessionUtils;
 
     /**
      * 创建
@@ -54,7 +53,7 @@ public class QuestionController {
     @PostMapping("/add")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
     public R<Long> addQuestion(@RequestBody @NotNull @Valid QuestionAddRequest questionAddRequest) {
-        UserInfoVo currentUser = userService.getCurrentUser();
+        UserInfoVo currentUser = sessionUtils.getCurrentUser();
         Question question = new Question();
         BeanUtils.copyProperties(questionAddRequest, question);
         question.setUserId(currentUser.getUid());
@@ -159,7 +158,7 @@ public class QuestionController {
      */
     @GetMapping("/{id}/vo/safe")
     public R<SafeQuestionVo> getSafeQuestionVoById(@PathVariable("id") @Min(1) Long id) {
-        UserInfoVo currentUser = userService.getCurrentUser();
+        UserInfoVo currentUser = sessionUtils.getCurrentUser();
         Question question = questionService.getById(id);
         ThrowUtils.throwIf(question == null, AppHttpCodeEnum.NOT_EXIST);
         SafeQuestionVo vo = questionService.objToVo(question, currentUser.getUid());
@@ -182,7 +181,7 @@ public class QuestionController {
         if(queryWrapper != null){
             Page<Question> questionPage = questionService.page(new Page<>(pageNum, pageSize), queryWrapper);
 
-            UserInfoVo currentUser = userService.getCurrentUser();
+            UserInfoVo currentUser = sessionUtils.getCurrentUser();
             List<SafeQuestionVo> records = questionPage.getRecords().stream()
                     .map(question -> questionService.objToVo(question, currentUser.getUid()))
                     .toList();

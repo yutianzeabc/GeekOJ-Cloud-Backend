@@ -33,7 +33,5 @@ public class UserInfoVo implements Serializable {
 
     private Integer fans;
 
-    private Integer topic;
-
     private Boolean isFollow = false;
 }

@@ -6,7 +6,6 @@ import cn.dev33.satoken.reactor.spring.SaTokenContextForSpringReactor;
 import cn.dev33.satoken.router.SaHttpMethod;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.spring.pathmatch.SaPatternsRequestConditionHolder;
-import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Bean;
@@ -40,8 +39,7 @@ public class SaTokenConfig {
                         "/img.icons/**",
                         "/swagger-resources/**",
                         "/v3/api-docs/**",
-                        "/**/v3/api-docs",
-                        "/api/user/get/login"
+                        "/**/v3/api-docs"
                 )
                 // 设置跨域 必须
                 .setBeforeAuth(obj -> {
@@ -66,8 +64,8 @@ public class SaTokenConfig {
                 // 鉴权方法：每次访问进入
                 .setAuth(obj -> {
                     // 登录校验 -- 拦截所有路由，并排除部分特殊路由
-                    SaRouter.match("/api/user/**").notMatch("/api/user/register", "/api/user/login", "/api/user/get/login").check(r -> StpUtil.checkLogin());
-                    SaRouter.match("/api/question/**").notMatch("/api/question/list/page/vo", "/api/question/question_submit/list/page").check(r -> StpUtil.checkLogin());
+//                    SaRouter.match("/api/user/**").notMatch("/api/user/register", "/api/user/login", "/api/user/get/login").check(r -> StpUtil.checkLogin());
+//                    SaRouter.match("/api/question/**").notMatch("/api/question/list/page/vo", "/api/question/question_submit/list/page").check(r -> StpUtil.checkLogin());
                 })
                 // 异常处理方法：每次setAuth函数出现异常时进入
                 .setError(e -> SaResult.error(e.getMessage()));

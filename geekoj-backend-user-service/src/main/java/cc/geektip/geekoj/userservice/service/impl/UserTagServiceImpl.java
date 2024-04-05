@@ -12,7 +12,7 @@ import cc.geektip.geekoj.common.utils.BeanCopyUtils;
 import cc.geektip.geekoj.common.utils.ObjectMapperUtils;
 import cc.geektip.geekoj.userservice.mapper.UserTagMapper;
 import cc.geektip.geekoj.userservice.utils.RedisUtils;
-import cc.geektip.geekoj.userservice.utils.SessionUtil;
+import cc.geektip.geekoj.userservice.utils.SessionUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -39,7 +39,7 @@ import static cc.geektip.geekoj.common.constant.SystemConstant.TAG_COLORS;
 @DubboService
 public class UserTagServiceImpl extends ServiceImpl<UserTagMapper, UserTag> implements UserTagService {
     @Resource
-    private SessionUtil sessionUtil;
+    private SessionUtils sessionUtils;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Resource
@@ -64,7 +64,7 @@ public class UserTagServiceImpl extends ServiceImpl<UserTagMapper, UserTag> impl
     @Override
     public UserTagVo addATag(UserTagAddRequest userTagAddRequest) {
         // 1. 获取当前用户
-        Long currentUid = sessionUtil.getCurrentUserId();
+        Long currentUid = sessionUtils.getCurrentUserId();
 
         // 2. 获取标签列表
         List<UserTag> tags = redisUtils.readList(USER_TAGS_PREFIX + userTagAddRequest.getParentId(), UserTag.class);

@@ -9,7 +9,8 @@ import cc.geektip.geekoj.api.service.user.UserService;
 import cc.geektip.geekoj.common.constant.RedisConstant;
 import cc.geektip.geekoj.userservice.mapper.FollowMapper;
 import cc.geektip.geekoj.userservice.mq.FollowMQProducer;
-import cc.geektip.geekoj.userservice.utils.SessionUtil;
+import cc.geektip.geekoj.userservice.utils.SessionUtils;
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -31,11 +32,11 @@ import java.util.stream.Collectors;
 @DubboService
 public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> implements FollowService {
     @Resource
-    private RedisTemplate<String, Long> redisTemplate;
+    private RedisTemplate<String, Long> longRedisTemplate;
     @Resource
     private FollowMQProducer followMQProducer;
     @Resource
-    private SessionUtil sessionUtil;
+    private SessionUtils sessionUtils;
     @Resource
     private UserService userService;
 
@@ -43,7 +44,7 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
     public void follow(Long uid) {
         // 1. 获取当前用户
         Follow follow = new Follow();
-        follow.setUid(sessionUtil.getCurrentUserId());
+        follow.setUid(sessionUtils.getCurrentUserId());
         follow.setFollowUid(uid);
         // 2. 发送关注消息到队列
         followMQProducer.sendFollowMessage(follow);
@@ -51,35 +52,37 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
 
     @Override
     public boolean isFollow(Long uid, Long followId) {
-        Long currentUid = sessionUtil.getCurrentUserId();
-        String redisKey = RedisConstant.USER_FOLLOWS_PREFIX + currentUid;
+        String redisKey = RedisConstant.USER_FOLLOWS_PREFIX + uid;
         // 1. 先判断是否存在
-        if (redisTemplate.hasKey(redisKey)) {
+        if (longRedisTemplate.hasKey(redisKey)) {
             // 2. 判断是否关注
-            return redisTemplate.opsForSet().isMember(redisKey, followId);
+            return longRedisTemplate.opsForSet().isMember(redisKey, followId);
         } else {
             // 3. 如果不存在，从数据库中查询
             List<Long> followIds = lambdaQuery().select(Follow::getFollowUid)
-                    .eq(Follow::getUid, currentUid)
+                    .eq(Follow::getUid, uid)
                     .list()
                     .stream()
                     .map(Follow::getFollowUid)
                     .toList();
+            if (CollUtil.isEmpty(followIds)) {
+                return false;
+            }
             // 4. 将关注的用户id存入redis
-            redisTemplate.opsForSet().add(redisKey, followIds.toArray(new Long[0]));
-            redisTemplate.expire(redisKey, RedisConstant.USER_FOLLOWS_FANS_TTL, TimeUnit.HOURS);
+            longRedisTemplate.opsForSet().add(redisKey, followIds.toArray(new Long[0]));
+            longRedisTemplate.expire(redisKey, RedisConstant.USER_FOLLOWS_FANS_TTL, TimeUnit.HOURS);
             return followIds.contains(followId);
         }
     }
 
     @Override
     public List<Long> getFollowIdsOfCurrent() {
-        Long currentUid = sessionUtil.getCurrentUserId();
+        Long currentUid = sessionUtils.getCurrentUserId();
         String redisKey = RedisConstant.USER_FOLLOWS_PREFIX + currentUid;
         // 1. 先判断是否存在
-        if (redisTemplate.hasKey(redisKey)) {
+        if (longRedisTemplate.hasKey(redisKey)) {
             // 2. 从redis中获取
-            return redisTemplate.opsForSet().members(redisKey).stream().toList();
+            return longRedisTemplate.opsForSet().members(redisKey).stream().toList();
         } else {
             // 3. 从数据库中查询
             List<Long> followIds = lambdaQuery().select(Follow::getFollowUid)
@@ -88,9 +91,12 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
                     .stream()
                     .map(Follow::getFollowUid)
                     .toList();
+            if (CollUtil.isEmpty(followIds)) {
+                return followIds;
+            }
             // 4. 将关注的用户id存入redis
-            redisTemplate.opsForSet().add(redisKey, followIds.toArray(new Long[0]));
-            redisTemplate.expire(redisKey, RedisConstant.USER_FOLLOWS_FANS_TTL, TimeUnit.HOURS);
+            longRedisTemplate.opsForSet().add(redisKey, followIds.toArray(new Long[0]));
+            longRedisTemplate.expire(redisKey, RedisConstant.USER_FOLLOWS_FANS_TTL, TimeUnit.HOURS);
             return followIds;
         }
     }
@@ -124,9 +130,9 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
     public List<Long> getFollowIdsByUid(Long uid) {
         String redisKey = RedisConstant.USER_FOLLOWS_PREFIX + uid;
         // 1. 先判断是否存在
-        if (redisTemplate.hasKey(redisKey)) {
+        if (longRedisTemplate.hasKey(redisKey)) {
             // 2. 从redis中获取
-            return redisTemplate.opsForSet().members(redisKey).stream().toList();
+            return longRedisTemplate.opsForSet().members(redisKey).stream().toList();
         } else {
             // 3. 从数据库中查询
             List<Long> followIds = lambdaQuery().select(Follow::getFollowUid)
@@ -135,9 +141,12 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
                     .stream()
                     .map(Follow::getFollowUid)
                     .toList();
+            if (CollUtil.isEmpty(followIds)) {
+                return followIds;
+            }
             // 4. 将关注的用户id存入redis
-            redisTemplate.opsForSet().add(redisKey, followIds.toArray(new Long[0]));
-            redisTemplate.expire(redisKey, RedisConstant.USER_FOLLOWS_FANS_TTL, TimeUnit.HOURS);
+            longRedisTemplate.opsForSet().add(redisKey, followIds.toArray(new Long[0]));
+            longRedisTemplate.expire(redisKey, RedisConstant.USER_FOLLOWS_FANS_TTL, TimeUnit.HOURS);
             return followIds;
         }
     }
@@ -152,12 +161,12 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
 
     @Override
     public List<Long> getFanIdsOfCurrent() {
-        Long currentUid = sessionUtil.getCurrentUserId();
+        Long currentUid = sessionUtils.getCurrentUserId();
         String redisKey = RedisConstant.USER_FANS_PREFIX + currentUid;
         // 1. 先判断是否存在
-        if (redisTemplate.hasKey(redisKey)) {
+        if (longRedisTemplate.hasKey(redisKey)) {
             // 2. 从redis中获取
-            return redisTemplate.opsForSet().members(redisKey).stream().toList();
+            return longRedisTemplate.opsForSet().members(redisKey).stream().toList();
         } else {
             // 3. 从数据库中查询
             List<Long> fanIds = lambdaQuery().select(Follow::getUid)
@@ -166,9 +175,12 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
                     .stream()
                     .map(Follow::getUid)
                     .toList();
+            if (CollUtil.isEmpty(fanIds)) {
+                return fanIds;
+            }
             // 4. 将粉丝的用户id存入redis
-            redisTemplate.opsForSet().add(redisKey, fanIds.toArray(new Long[0]));
-            redisTemplate.expire(redisKey, RedisConstant.USER_FOLLOWS_FANS_TTL, TimeUnit.HOURS);
+            longRedisTemplate.opsForSet().add(redisKey, fanIds.toArray(new Long[0]));
+            longRedisTemplate.expire(redisKey, RedisConstant.USER_FOLLOWS_FANS_TTL, TimeUnit.HOURS);
             return fanIds;
         }
     }
@@ -202,9 +214,9 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
     public List<Long> getFanIdsByUid(Long uid) {
         String redisKey = RedisConstant.USER_FANS_PREFIX + uid;
         // 1. 先判断是否存在
-        if (redisTemplate.hasKey(redisKey)) {
+        if (longRedisTemplate.hasKey(redisKey)) {
             // 2. 从redis中获取
-            return redisTemplate.opsForSet().members(redisKey).stream().toList();
+            return longRedisTemplate.opsForSet().members(redisKey).stream().toList();
         } else {
             // 3. 从数据库中查询
             List<Long> fanIds = lambdaQuery().select(Follow::getUid)
@@ -213,9 +225,12 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
                     .stream()
                     .map(Follow::getUid)
                     .toList();
+            if (CollUtil.isEmpty(fanIds)) {
+                return fanIds;
+            }
             // 4. 将粉丝的用户id存入redis
-            redisTemplate.opsForSet().add(redisKey, fanIds.toArray(new Long[0]));
-            redisTemplate.expire(redisKey, RedisConstant.USER_FOLLOWS_FANS_TTL, TimeUnit.HOURS);
+            longRedisTemplate.opsForSet().add(redisKey, fanIds.toArray(new Long[0]));
+            longRedisTemplate.expire(redisKey, RedisConstant.USER_FOLLOWS_FANS_TTL, TimeUnit.HOURS);
             return fanIds;
         }
     }
@@ -226,6 +241,11 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
                 .list().stream().map(Follow::getUid).toList();
         List<UserInfoVo> vos = userService.getUserListByUids(fanIds);
         return vos;
+    }
+
+    @Override
+    public void removeByUidPair(Long uid, Long followUid) {
+        lambdaUpdate().eq(Follow::getUid, uid).eq(Follow::getFollowUid, followUid).remove();
     }
 }
 

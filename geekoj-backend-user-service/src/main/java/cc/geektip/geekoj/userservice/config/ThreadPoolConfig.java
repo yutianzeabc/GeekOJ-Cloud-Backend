@@ -1,6 +1,7 @@
 package cc.geektip.geekoj.userservice.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
  * @author: Fish
  *
  */
+@Configuration
 public class ThreadPoolConfig {
     @Bean
     public ThreadPoolExecutor threadPoolExecutor(ThreadPoolProperties pool){

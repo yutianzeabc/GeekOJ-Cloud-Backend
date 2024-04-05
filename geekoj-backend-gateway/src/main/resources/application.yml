@@ -21,19 +21,15 @@ spring:
           uri: lb://geekoj-backend-user-service
           predicates:
             - Path=/api/user/**
-          filters:
-            - RewritePath=/api/(?<segment>.*),/$\{segment}
         - id: geekoj-backend-question-service
           uri: lb://geekoj-backend-question-service
           predicates:
             - Path=/api/oj/**
-          filters:
-            - RewritePath=/api/(?<segment>.*),/$\{segment}
   main:
     web-application-type: reactive
   data:
     redis:
-      database: 6
+      database: 8
       host: link
       port: 6379
       timeout: 5000
@@ -53,9 +49,6 @@ server:
   address: 0.0.0.0
   port: 8100
 
-springdoc:
-  api-docs:
-    path: /v3/api-docs
 knife4j:
   gateway:
     enabled: true
@@ -63,8 +56,7 @@ knife4j:
     operations-sorter: order
     discover:
       enabled: true
-      excluded-services:
-        - geekoj-backend-gateway
+      version: openapi3
     strategy: discover
 
 cors:

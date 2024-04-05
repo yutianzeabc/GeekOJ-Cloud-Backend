@@ -5,7 +5,7 @@ import cc.geektip.geekoj.api.model.dto.user.UserUpdateRequest;
 import cc.geektip.geekoj.api.model.vo.user.UserInfoVo;
 import cc.geektip.geekoj.api.service.user.UserService;
 import cc.geektip.geekoj.common.common.R;
-import cc.geektip.geekoj.userservice.utils.SessionUtil;
+import cc.geektip.geekoj.userservice.utils.SessionUtils;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -19,7 +19,7 @@ public class UserController {
     private UserService userService;
 
     @Resource
-    private SessionUtil sessionUtil;
+    private SessionUtils sessionUtils;
 
     /**
      * 获取当前登录用户的信息
@@ -27,7 +27,7 @@ public class UserController {
      */
     @GetMapping("/info")
     public R<UserInfoVo> getCurrentUser(){
-        UserInfoVo currentUser = sessionUtil.getCurrentUser();
+        UserInfoVo currentUser = sessionUtils.getCurrentUser();
         return R.ok(currentUser);
     }
 

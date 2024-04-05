@@ -22,7 +22,7 @@ spring:
     check-template-location: false
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://link:3306/geekoj
+    url: jdbc:mysql://link:3306/geekoj_cloud
     username: root
     password: ytz
   servlet:
@@ -32,7 +32,7 @@ spring:
   # Redis 配置
   data:
     redis:
-      database: 6
+      database: 8
       host: link
       port: 6379
       timeout: 5000
@@ -114,16 +114,16 @@ geekoj:
       appSecret:
       templateId:
     oss:
-      accessKey:
-      secretKey:
-      bucket:
+      accessKey: ***REMOVED***
+      secretKey: ***REMOVED***
+      bucket: ***REMOVED***
       domain:
     oauth:
       gitee:
-        client_id:
-        client_secret:
-        grant_type:
-        redirect_uri:
+        client_id: ***REMOVED***
+        client_secret: ***REMOVED***
+        grant_type: authorization_code
+        redirect_uri: https://oj.geektip.cc/oauth2.0/gitee/success
 # 新版本3.0接口文档配置
 springdoc:
   info:

@@ -15,7 +15,7 @@ import cc.geektip.geekoj.common.common.AppHttpCodeEnum;
 import cc.geektip.geekoj.common.exception.ThrowUtils;
 import cc.geektip.geekoj.questionservice.mapper.QuestionSubmitMapper;
 import cc.geektip.geekoj.questionservice.mq.JudgeMQProducer;
-import cc.geektip.geekoj.questionservice.utils.SessionUtil;
+import cc.geektip.geekoj.questionservice.utils.SessionUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -31,7 +31,7 @@ import java.util.List;
 @DubboService
 public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper, QuestionSubmit> implements QuestionSubmitService {
     @Resource
-    private SessionUtil sessionUtil;
+    private SessionUtils sessionUtils;
     @Resource
     private QuestionService questionService;
     @Resource
@@ -57,7 +57,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         ThrowUtils.throwIf(question == null, AppHttpCodeEnum.NOT_EXIST, "题目不存在");
        
         // 取得当前登录用户
-        Long userId = sessionUtil.getCurrentUserId();
+        Long userId = sessionUtils.getCurrentUserId();
         
         // 判断用户是否有正在等待或判题的题，如果有，提交判题失败
         QuestionSubmit submit = lambdaQuery().eq(QuestionSubmit::getUserId, userId)
@@ -94,7 +94,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
     @Override
     public Page<QuestionSubmitVo> listQuestionSubmitVoByPage(QuestionSubmitQueryRequest questionSubmitQueryRequest) {
         // 取得当前登录用户
-        long userId = sessionUtil.getCurrentUserId();
+        long userId = sessionUtils.getCurrentUserId();
         // 获取分页信息
         long pageNum = questionSubmitQueryRequest.getPageNum();
         long pageSize = questionSubmitQueryRequest.getPageSize();
@@ -113,7 +113,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
     @Override
     public QuestionSubmitSummaryVo getSubmitSummary() {
         // 获取当前登录用户
-        Long userId = sessionUtil.getCurrentUserId();
+        Long userId = sessionUtils.getCurrentUserId();
 
         QuestionSubmitSummaryVo summaryVo = new QuestionSubmitSummaryVo();
         // 获取简单、中等、困难题目

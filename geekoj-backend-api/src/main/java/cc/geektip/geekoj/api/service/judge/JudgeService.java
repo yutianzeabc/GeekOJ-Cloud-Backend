@@ -1,6 +1,5 @@
 package cc.geektip.geekoj.api.service.judge;
 
-
 import cc.geektip.geekoj.api.model.dto.question.QuestionRunRequest;
 import cc.geektip.geekoj.api.model.entity.question.QuestionSubmit;
 import cc.geektip.geekoj.api.model.vo.question.QuestionRunResult;

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * @author: Fish
  */
 @Component
-public class SessionUtil {
+public class SessionUtils {
     public UserInfoVo getCurrentUser() {
         return StpUtil.getSession().getModel(SaSession.USER, UserInfoVo.class);
     }

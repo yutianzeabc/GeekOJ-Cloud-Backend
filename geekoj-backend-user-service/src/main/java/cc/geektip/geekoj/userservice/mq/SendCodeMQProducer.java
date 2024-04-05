@@ -5,6 +5,7 @@ import jakarta.annotation.Resource;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.stereotype.Component;
 
+import static cc.geektip.geekoj.common.constant.MqConstant.TOPIC_CODE;
 import static cc.geektip.geekoj.common.constant.SystemConstant.MAIL_CODE;
 import static cc.geektip.geekoj.common.constant.SystemConstant.PHONE_CODE;
 
@@ -27,9 +28,9 @@ public class SendCodeMQProducer {
      */
     public void sendCodeMessage(int type, String dest, String codeNum) {
         if (type == PHONE_CODE) {
-            rocketMQTemplate.convertAndSend(new SendCodeMsg("phone", dest, codeNum));
+            rocketMQTemplate.convertAndSend(TOPIC_CODE, new SendCodeMsg("phone", dest, codeNum));
         } else if (type == MAIL_CODE) {
-            rocketMQTemplate.convertAndSend(new SendCodeMsg("mail", dest, codeNum));
+            rocketMQTemplate.convertAndSend(TOPIC_CODE, new SendCodeMsg("mail", dest, codeNum));
         }
     }
 }

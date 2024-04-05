@@ -17,7 +17,7 @@ import cc.geektip.geekoj.common.utils.BeanCopyUtils;
 import cc.geektip.geekoj.common.utils.HttpUtils;
 import cc.geektip.geekoj.userservice.mapper.UserMapper;
 import cc.geektip.geekoj.userservice.mq.SendCodeMQProducer;
-import cc.geektip.geekoj.userservice.utils.SessionUtil;
+import cc.geektip.geekoj.userservice.utils.SessionUtils;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -28,10 +28,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,8 +61,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private SendCodeMQProducer sendCodeMQProducer;
     @Resource
-    private SessionUtil sessionUtil;
-    @DubboReference
+    private SessionUtils sessionUtils;
+    @Resource
+    @Lazy
     private FollowService followService;
 
     @Override
@@ -223,13 +224,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public UserInfoVo getCurrentUser() {
-        return sessionUtil.getCurrentUser();
+        return sessionUtils.getCurrentUser();
     }
 
     @Override
     public void updateCurrentUser(UserUpdateRequest updateVo) {
         // 当前用户只允许修改自己的信息，管理员可以修改任何用户的信息
-        Long currentUid = sessionUtil.getCurrentUserId();
+        Long currentUid = sessionUtils.getCurrentUserId();
         if (!currentUid.equals(updateVo.getUid()) && !StpUtil.hasRole(UserRoleEnum.ADMIN.getValue())) {
             throw new BusinessException(AppHttpCodeEnum.NO_AUTH);
         }
@@ -246,7 +247,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public void updatePwd(PwdUpdateRequest pwdUpdateRequest) {
         // 只允许当前用户修改自己的密码
-        Long currentUid = sessionUtil.getCurrentUserId();
+        Long currentUid = sessionUtils.getCurrentUserId();
         // 获取当前用户
         User user = getById(currentUid);
         // 校验原密码
@@ -263,7 +264,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public void bindPhone(String phone, String code) {
         // 0. 获取当前用户（同时校验是否登录）
-        UserInfoVo userInfoVo = sessionUtil.getCurrentUser();
+        UserInfoVo userInfoVo = sessionUtils.getCurrentUser();
         // 1. 校验验证码
         String redisSmsCodeKey = RedisConstant.CODE_SMS_CACHE_PREFIX + phone;
         String redisSmsCode = stringRedisTemplate.opsForValue().get(redisSmsCodeKey);
@@ -289,7 +290,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public void updateMail(String mail, String code) {
         // 0. 获取当前用户（同时校验是否登录）
-        UserInfoVo userInfoVo = sessionUtil.getCurrentUser();
+        UserInfoVo userInfoVo = sessionUtils.getCurrentUser();
         // 1. 校验验证码
         String redisMailCodeKey = RedisConstant.MAIL_CODE_CACHE_PREFIX + mail;
         String redisMailCode = stringRedisTemplate.opsForValue().get(redisMailCodeKey);
@@ -411,7 +412,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userInfoVo.setTags(userTagVos);
         // 判断是否关注
         if (StpUtil.isLogin()) {
-            Long currentUid = sessionUtil.getCurrentUserId();
+            Long currentUid = sessionUtils.getCurrentUserId();
             userInfoVo.setIsFollow(followService.isFollow(currentUid, user.getUid()));
         }
         return userInfoVo;

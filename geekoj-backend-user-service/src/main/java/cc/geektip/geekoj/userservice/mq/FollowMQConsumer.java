@@ -6,7 +6,6 @@ import cc.geektip.geekoj.api.service.user.UserService;
 import cc.geektip.geekoj.common.constant.RedisConstant;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.spring.annotation.ConsumeMode;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,7 +24,7 @@ import static cc.geektip.geekoj.common.constant.MqConstant.TOPIC_FOLLOW;
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(topic = TOPIC_FOLLOW, consumerGroup = CONSUMER_GROUP_FOLLOW, consumeMode = ConsumeMode.ORDERLY)
+@RocketMQMessageListener(topic = TOPIC_FOLLOW, consumerGroup = CONSUMER_GROUP_FOLLOW, maxReconsumeTimes = 2)
 public class FollowMQConsumer implements RocketMQListener<Follow> {
     @Resource
     private RedisTemplate<String, Long> redisTemplate;
@@ -43,7 +42,7 @@ public class FollowMQConsumer implements RocketMQListener<Follow> {
         String toUserFansKey = RedisConstant.USER_FANS_PREFIX + follow.getFollowUid();
         if (isFollow) {
             // 2.1 如果已关注，取消关注
-            followService.removeById(follow);
+            followService.removeByUidPair(follow.getUid(), follow.getFollowUid());
             userService.decrFollowsCount(follow.getUid());
             userService.decrFansCount(follow.getFollowUid());
             if (redisTemplate.hasKey(fromUserFollowsKey)) {

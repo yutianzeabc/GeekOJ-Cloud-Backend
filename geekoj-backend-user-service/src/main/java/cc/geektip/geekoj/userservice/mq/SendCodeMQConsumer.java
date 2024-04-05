@@ -1,15 +1,13 @@
 package cc.geektip.geekoj.userservice.mq;
 
 import cc.geektip.geekoj.api.model.dto.mq.SendCodeMsg;
-import cc.geektip.geekoj.userservice.utils.MailUtil;
-import cc.geektip.geekoj.userservice.utils.SmsUtil;
+import cc.geektip.geekoj.userservice.utils.MailUtils;
+import cc.geektip.geekoj.userservice.utils.SmsUtils;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.spring.annotation.ConsumeMode;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.Resource;
 
 import static cc.geektip.geekoj.common.constant.MqConstant.CONSUMER_GROUP_CODE;
 import static cc.geektip.geekoj.common.constant.MqConstant.TOPIC_CODE;
@@ -21,12 +19,12 @@ import static cc.geektip.geekoj.common.constant.MqConstant.TOPIC_CODE;
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(topic = TOPIC_CODE, consumerGroup = CONSUMER_GROUP_CODE, consumeMode = ConsumeMode.ORDERLY)
+@RocketMQMessageListener(topic = TOPIC_CODE, consumerGroup = CONSUMER_GROUP_CODE, maxReconsumeTimes = 2)
 public class SendCodeMQConsumer implements RocketMQListener<SendCodeMsg> {
     @Resource
-    private SmsUtil smsUtil;
+    private SmsUtils smsUtils;
     @Resource
-    private MailUtil mailUtil;
+    private MailUtils mailUtil;
 
     @Override
     public void onMessage(SendCodeMsg sendCodeMsg) {
@@ -36,13 +34,13 @@ public class SendCodeMQConsumer implements RocketMQListener<SendCodeMsg> {
 
         try {
             if ("phone".equals(type)) {
-                smsUtil.sendCode(dest, codeNum);
+                smsUtils.sendCode(dest, codeNum);
             } else if ("mail".equals(type)) {
                 mailUtil.sendMail(dest, codeNum);
             }
-            log.info("消费MQ消息，完成 topic：{} dest：{}", TOPIC_CODE, dest);
+            log.info("消费MQ消息，完成 topic：{} dest：{} code：{}", TOPIC_CODE, dest, codeNum);
         } catch (Exception e) {
-            log.error("消费MQ消息，失败 topic：{} dest：{}", TOPIC_CODE, dest);
+            log.error("消费MQ消息，失败 topic：{} dest：{} code：{}", TOPIC_CODE, dest, codeNum);
             throw e;
         }
     }

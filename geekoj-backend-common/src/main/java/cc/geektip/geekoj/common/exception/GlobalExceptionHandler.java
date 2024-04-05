@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
         //打印异常信息
         log.error("出现了异常！{}", e.getMessage());
         //从异常对象中获取信息，封装成ResponseResult后返回
-        return R.error(AppHttpCodeEnum.NOT_LOGIN.getCode(), e.getMessage());
+        return R.error(AppHttpCodeEnum.NOT_LOGIN.getCode(), AppHttpCodeEnum.NOT_LOGIN.getMsg());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

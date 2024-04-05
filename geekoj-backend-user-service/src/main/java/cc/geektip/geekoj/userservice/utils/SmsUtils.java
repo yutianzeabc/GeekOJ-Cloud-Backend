@@ -16,29 +16,25 @@ import java.util.Map;
 @Slf4j
 @Component
 @ConfigurationProperties(prefix = "geekoj.third-party.sms")
-public class SmsUtil {
+public class SmsUtils {
     private String apiUrl;
     private String appId;
     private String appSecret;
     private String templateId;
 
     public void sendCode(String phone, String code) {
-        //发送验证码
+        // 目前禁用短信发送
+        throw new BusinessException(AppHttpCodeEnum.INTERNAL_SERVER_ERROR, "短信发送当前不可用");
     }
 
-    /**
-     * 提供给别的服务进行调用
-     * @param phone
-     * @param code
-     * @return
-     */
-    public void sendCodeTrue(String phone, String code) {
+    public void sendCodeInner(String phone, String code) {
+
         try {
-            //将验证码通过榛子云接口发送至手机
+            // 认证榛子云接口
             ZhenziSmsClient client = new ZhenziSmsClient(apiUrl, appId, appSecret);
 
-            //发送短信
-            Map<String, Object> params = new HashMap<>();//参数需要通过Map传递
+            // 发送短信
+            Map<String, Object> params = new HashMap<>();
             params.put("number", phone);
             params.put("templateId", templateId);
 
@@ -50,7 +46,7 @@ public class SmsUtil {
             String result = client.send(params);
             Map map = JSON.parseObject(result, Map.class);
             int status = (int) map.get("code");
-            if(status == 0){
+            if (status == 0) {
                 log.info("短信发送成功！手机号：{}，验证码：{}", phone, code);
             }
         } catch (Exception e) {

@@ -12,13 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 import static cc.geektip.geekoj.common.constant.RedisConstant.USER_TAGS_CATEGORY;
 import static cc.geektip.geekoj.common.constant.RedisConstant.USER_TAGS_PREFIX;
 
-// @Component
+@Component
 @Slf4j
 public class StartRunner implements CommandLineRunner {
     @Resource

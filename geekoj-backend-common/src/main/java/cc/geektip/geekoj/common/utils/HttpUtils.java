@@ -1,8 +1,5 @@
 package cc.geektip.geekoj.common.utils;
 
-import cc.geektip.geekoj.common.constant.SystemConstant;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -315,21 +312,5 @@ public class HttpUtils {
         } catch (NoSuchAlgorithmException ex) {
             throw new RuntimeException(ex);
         }
-    }
-
-    public static String getToken(HttpServletRequest request){
-        // 获取所有的Cookie
-        Cookie[] cookies = request.getCookies();
-        String token = null;
-        if (cookies != null) {
-            // 遍历所有的Cookie，找到name为TOKEN的Cookie
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(SystemConstant.TOKEN)) {
-                    token = cookie.getValue();
-                    break;
-                }
-            }
-        }
-        return token;
     }
 }
