@@ -11,7 +11,7 @@ import static cc.geektip.geekoj.common.constant.SystemConstant.PHONE_CODE;
 
 /**
 @description: 验证码生产者
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Component

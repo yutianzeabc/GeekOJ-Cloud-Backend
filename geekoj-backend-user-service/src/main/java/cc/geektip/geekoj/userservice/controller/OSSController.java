@@ -25,15 +25,14 @@ public class OSSController {
     public R<Map<String, Object>> policy() {
         Map<String, Object> result = new HashMap<>();
         try {
-            //验证七牛云身份是否通过
+            // 创建认证
             Auth auth = Auth.create(ossProperties.getAccessKey(), ossProperties.getSecretKey());
-            //生成凭证
+            // 生成上传凭证
             String upToken = auth.uploadToken(ossProperties.getBucket());
             result.put("token", upToken);
-            //存入外链默认域名，用于拼接完整的资源外链路径
             result.put("domain", ossProperties.getDomain());
 
-            //生成文件夹名
+            // 上传目录
             String dir = "oj/" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
             result.put("dir", dir);
 

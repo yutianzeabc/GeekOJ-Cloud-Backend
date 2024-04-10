@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @description: 判题策略注册中心，用于获取判题策略实例对象，用了单例模式，保证判题策略实例唯一性
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Component

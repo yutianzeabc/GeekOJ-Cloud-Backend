@@ -16,7 +16,7 @@ public class QuestionSubmitQueryRequest extends PageRequest implements Serializa
     /**
      * 题目 id
      */
-    private Long QuestionId;
+    private Long questionId;
 
     @Serial
     private static final long serialVersionUID = 1L;

@@ -4,7 +4,7 @@ import cc.geektip.geekoj.api.model.entity.user.UserTagCategory;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
-* @author Fish
+* @author Bill Yu
 * @description 针对表【user_tag_category】的数据库操作Mapper
 * @Entity cc.geektip.geekoj.api.model.entity.user.UserTagCategory
 */

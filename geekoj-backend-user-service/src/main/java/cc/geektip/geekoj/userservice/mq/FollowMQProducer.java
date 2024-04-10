@@ -9,7 +9,7 @@ import static cc.geektip.geekoj.common.constant.MqConstant.TOPIC_FOLLOW;
 
 /**
  * @description: 关注消息生产者
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Component

@@ -14,12 +14,12 @@ import static cc.geektip.geekoj.common.constant.MqConstant.TOPIC_JUDGE;
 
 /**
  * @description: 判题消息消费者
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(topic = TOPIC_JUDGE, consumerGroup = CONSUMER_GROUP_JUDGE, consumeMode = ConsumeMode.ORDERLY)
+@RocketMQMessageListener(topic = TOPIC_JUDGE, consumerGroup = CONSUMER_GROUP_JUDGE, consumeMode = ConsumeMode.ORDERLY, maxReconsumeTimes = 2)
 public class JudgeMQConsumer implements RocketMQListener<JudgeMQMsg> {
     @Resource
     private JudgeService judgeService;
@@ -28,7 +28,7 @@ public class JudgeMQConsumer implements RocketMQListener<JudgeMQMsg> {
         Long questionSubmitId = judgeMQMsg.getQuestionSubmitId();
         try {
             judgeService.doJudge(questionSubmitId);
-            log.info("消费MQ消息，完成 topic：{} submitId：{}", TOPIC_JUDGE, questionSubmitId);
+            log.debug("消费MQ消息，完成 topic：{} submitId：{}", TOPIC_JUDGE, questionSubmitId);
         } catch (Exception e) {
             log.error("消费MQ消息，失败 topic：{} submitId：{}", TOPIC_JUDGE, questionSubmitId);
             throw e;

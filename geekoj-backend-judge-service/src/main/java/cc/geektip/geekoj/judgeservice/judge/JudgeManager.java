@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * @description: 判题管理器，用于管理判题服务和判题策略，单例
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Service

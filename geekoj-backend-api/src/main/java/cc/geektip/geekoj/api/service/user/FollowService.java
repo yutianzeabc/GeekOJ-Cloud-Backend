@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
-* @author Fish
+* @author Bill Yu
 * @description 针对表【follow】的数据库操作Service
 */
 public interface FollowService extends IService<Follow> {

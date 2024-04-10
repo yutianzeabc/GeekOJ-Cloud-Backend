@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * @description: Java 语言判题策略，用于定义 Java 语言的判题逻辑
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Component
@@ -101,11 +101,11 @@ public class JavaLanguageJudgeStrategy implements JudgeStrategy {
         } else if (response.getCode().equals(ExecuteCodeStatusEnum.COMPILE_FAILED.getValue())) {
             judgeInfo.setPass(0);
             judgeInfo.setStatus(JudgeInfoEnum.COMPILE_ERROR.getValue());
-            judgeInfo.setMessage(JudgeInfoEnum.COMPILE_ERROR.getText() + response.getMsg());
+            judgeInfo.setMessage(JudgeInfoEnum.COMPILE_ERROR.getText() + ":\n" + response.getMsg());
         } else if (response.getCode().equals(ExecuteCodeStatusEnum.RUN_FAILED.getValue())) {
             judgeInfo.setPass(0);
             judgeInfo.setStatus(JudgeInfoEnum.RUNTIME_ERROR.getValue());
-            judgeInfo.setMessage(JudgeInfoEnum.RUNTIME_ERROR.getText() + response.getMsg());
+            judgeInfo.setMessage(JudgeInfoEnum.RUNTIME_ERROR.getText()+ ":\n" + response.getMsg());
         }
 
         return judgeInfo;

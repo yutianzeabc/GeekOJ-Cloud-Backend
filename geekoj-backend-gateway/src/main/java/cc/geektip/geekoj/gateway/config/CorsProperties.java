@@ -6,15 +6,15 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @description: CORS Config
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "cors")
-public class CorsConfig {
+public class CorsProperties {
     private String maxAge;
-    private String allowedOrigins;
+    private String allowedOrigin;
     private String allowedMethods;
     private String allowedHeaders;
 }

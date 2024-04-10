@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @description: API文档信息配置类
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Data
@@ -48,11 +48,6 @@ public class ApiDocProperties {
          * 联系人主页
          */
         private String url;
-        /**
-         * 联系人邮箱
-         */
-        private String email;
-
     }
 
     /**

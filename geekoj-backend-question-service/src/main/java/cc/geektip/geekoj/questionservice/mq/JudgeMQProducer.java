@@ -11,7 +11,7 @@ import static cc.geektip.geekoj.common.constant.MqConstant.TOPIC_JUDGE;
 
 /**
  * @description: 判题消息生产者
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Slf4j
@@ -26,7 +26,7 @@ public class JudgeMQProducer {
      * @param questionSubmitId 提交ID
      */
     public void sendJudgeMessage(Long questionSubmitId) {
-        log.info("发送MQ消息(判题) topic：{} submitId：{}", TOPIC_JUDGE, questionSubmitId);
+        log.debug("发送MQ消息(判题) topic：{} submitId：{}", TOPIC_JUDGE, questionSubmitId);
         rocketMQTemplate.convertAndSend(TOPIC_JUDGE, new JudgeMQMsg(questionSubmitId));
     }
 }

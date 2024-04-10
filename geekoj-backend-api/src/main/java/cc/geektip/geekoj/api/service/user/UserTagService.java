@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
-* @author Fish
+* @author Bill Yu
 * @description 针对表【user_tag】的数据库操作Service
 */
 public interface UserTagService extends IService<UserTag> {

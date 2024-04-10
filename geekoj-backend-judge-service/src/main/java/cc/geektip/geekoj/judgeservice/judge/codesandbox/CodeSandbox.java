@@ -5,7 +5,7 @@ import cc.geektip.geekoj.api.model.dto.codesandbox.ExecuteCodeResponse;
 
 /**
  * @description: 代码沙箱接口
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 public interface CodeSandbox {

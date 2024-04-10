@@ -1,103 +1,91 @@
-# 公共配置文件
 spring:
-  application:
-    name: geekoj-backend-judge-service
-  # 默认 dev 环境
   profiles:
-    active: dev
-  # 支持 swagger3
+    active: ${geekoj.profiles.active}
+  servlet:
+    multipart:
+      max-file-size: 10MB
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  # session 配置
-  session:
-    # 30 天过期
-    timeout: 2592000
-  # 数据库配置
   jackson:
-    date-format: yyyy-MM-dd
+    date-format: yyyy-MM-dd HH:mm:ss
     time-zone: Asia/Shanghai
   freemarker:
     enabled: false
     check-template-location: false
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://link:3306/geekoj_cloud
-    username: root
-    password: ytz
-  servlet:
-    multipart:
-      # 大小限制
-      max-file-size: 10MB
-  # Redis 配置
-  data:
-    redis:
-      database: 8
-      host: link
-      port: 6379
-      timeout: 5000
-      password: geektip
   cloud:
     nacos:
       discovery:
         enabled: true
-      server-addr: link:8848
-      username: nacos
-      password: nacos
+      server-addr: ${geekoj.nacos.host}:${geekoj.nacos.port}
+      username: ${geekoj.nacos.username}
+      password: ${geekoj.nacos.password}
+    sentinel:
+      eager: true
+      transport:
+        dashboard: ${geekoj.sentinel.host}:${geekoj.sentinel.port}
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${geekoj.mysql.host}:${geekoj.mysql.port}/${geekoj.mysql.database}
+    username: ${geekoj.mysql.username}
+    password: ${geekoj.mysql.password}
+  data:
+    redis:
+      database: ${geekoj.redis.database}
+      host: ${geekoj.redis.host}
+      port: ${geekoj.redis.port}
+      password: ${geekoj.redis.password}
+# Dubbo 配置
 dubbo:
   application:
     name: GeekOJ
     version: 1.0.0
   registry:
-    address: nacos://link:8848?username=nacos&password=nacos
+    address: nacos://${geekoj.nacos.host}:${geekoj.nacos.port}?username=${geekoj.nacos.username}&password=${geekoj.nacos.password}
   protocol:
     name: dubbo
-    port: 20883
+    port: ${geekoj.dubbo.port}
   scan:
     base-packages: cc.geektip.geekoj.api
+# RocketMQ 配置
 rocketmq:
   producer:
-    group: geekoj
-  name-server: link:9876
-server:
-  address: 0.0.0.0
-  port: 8103
-  servlet:
-    context-path: /api/judge
-    # cookie 30 天过期
-    session:
-      cookie:
-        max-age: 2592000
-        path: /api
-sa-token:
-  # 打开 RPC 调用鉴权
-  check-same-token: true
-  is-log: true
+    group: ${geekoj.rocketmq.group}
+  name-server: ${geekoj.rocketmq.host}:${geekoj.rocketmq.port}
+# MyBatis-Plus 配置
 mybatis-plus:
   configuration:
-    map-underscore-to-camel-case: false
+    map-underscore-to-camel-case: true
   global-config:
     db-config:
-      id-type: auto
       logic-delete-field: isDelete # 全局逻辑删除的实体字段名
       logic-delete-value: 1 # 逻辑已删除值（默认为 1）
       logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
+      id-type: auto
+# Sa-Token 配置
+sa-token:
+  # 打开 RPC 调用鉴权
+  check-same-token: true
+  # 打开日志
+  is-log: true
+# Servlet 配置
+server:
+  servlet:
+    context-path: /api/judge
 # 代码沙箱配置
 code-sandbox:
-  type: remote
+  type: ${geekoj.code-sandbox.type}
   remote:
-    endpoint: http://link:8090
-    x-service-key: 889b6b14-cdc0-4378-8fa5-6488a4b1f2f7
-# 新版本3.0接口文档配置
+    x-service-key: ${geekoj.code-sandbox.x-service-key}
+# SpringDoc 配置
 springdoc:
   info:
     title: "GeekOJ 判题服务"
     version: "1.0.0"
     description: "GeekOJ 判题服务接口文档"
     contact:
-      name: Fish
-      email: contact@geektip.cc
-      url: https://oj.geektip.cc
+      name: Bill Yu
+      url: ${geekoj.base.url}
     license:
       name: Apache 2.0
       url: https://www.apache.org/licenses/LICENSE-2.0.html

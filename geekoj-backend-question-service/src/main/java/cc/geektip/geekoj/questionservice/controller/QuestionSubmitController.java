@@ -45,13 +45,25 @@ public class QuestionSubmitController {
     }
 
     /**
-     * 分页获取题目提交历史
+     * 分页获取题目提交历史（全部）
      * @param questionSubmitQueryRequest
      * @return
      */
     @PostMapping("/page/vo")
-    public R<Page<QuestionSubmitVo>> listQuestionSubmitVoByPage(@RequestBody @NotNull QuestionSubmitQueryRequest questionSubmitQueryRequest) {
-        Page<QuestionSubmitVo> page = questionSubmitService.listQuestionSubmitVoByPage(questionSubmitQueryRequest);
+    public R<Page<QuestionSubmitVo>> listAllQuestionSubmitVoByPage(@RequestBody @NotNull QuestionSubmitQueryRequest questionSubmitQueryRequest) {
+        Page<QuestionSubmitVo> page = questionSubmitService.listAllQuestionSubmitVoByPage(questionSubmitQueryRequest);
+        // 返回脱敏信息
+        return R.ok(page);
+    }
+
+    /**
+     * 分页获取题目提交历史（个人）
+     * @param questionSubmitQueryRequest
+     * @return
+     */
+    @PostMapping("/page/vo/my")
+    public R<Page<QuestionSubmitVo>> listMyQuestionSubmitVoByPage(@RequestBody @NotNull QuestionSubmitQueryRequest questionSubmitQueryRequest) {
+        Page<QuestionSubmitVo> page = questionSubmitService.listMyQuestionSubmitVoByPage(questionSubmitQueryRequest);
         // 返回脱敏信息
         return R.ok(page);
     }
@@ -63,8 +75,8 @@ public class QuestionSubmitController {
      */
     @GetMapping("/{id}")
     public R<QuestionSubmitVo> getQuestionSubmitVoById(@PathVariable("id") Long id) {
-        QuestionSubmit submit = questionSubmitService.getById(id);
+        QuestionSubmitVo questionSubmitVo = questionSubmitService.getQuestionSubmitVoById(id);
         // 返回脱敏信息
-        return R.ok(QuestionSubmitVo.objToVo(submit));
+        return R.ok(questionSubmitVo);
     }
 }

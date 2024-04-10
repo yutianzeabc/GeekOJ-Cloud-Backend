@@ -6,8 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @description: Gitee OAuth 配置
- * @author: Fish
- * @date: 2024/4/1
+ * @author: Bill Yu
  */
 @Data
 @Configuration

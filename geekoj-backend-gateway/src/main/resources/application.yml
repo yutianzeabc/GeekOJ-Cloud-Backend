@@ -1,10 +1,8 @@
-# 公共配置文件
 spring:
-  application:
-    name: geekoj-backend-gateway
-  # 默认 dev 环境
   profiles:
-    active: dev
+    active: ${geekoj.profiles.active}
+  main:
+    web-application-type: reactive
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -12,9 +10,13 @@ spring:
     nacos:
       discovery:
         enabled: true
-      server-addr: link:8848
-      username: nacos
-      password: nacos
+      server-addr: ${geekoj.nacos.host}:${geekoj.nacos.port}
+      username: ${geekoj.nacos.username}
+      password: ${geekoj.nacos.password}
+    sentinel:
+      eager: true
+      transport:
+        dashboard: ${geekoj.sentinel.host}:${geekoj.sentinel.port}
     gateway:
       routes:
         - id: geekoj-backend-user-service
@@ -25,42 +27,41 @@ spring:
           uri: lb://geekoj-backend-question-service
           predicates:
             - Path=/api/oj/**
-  main:
-    web-application-type: reactive
+        - id: geekoj-backend-judge-service
+          uri: lb://geekoj-backend-judge-service
+          predicates:
+            - Path=/api/judge/**
   data:
     redis:
-      database: 8
-      host: link
-      port: 6379
+      database: ${geekoj.redis.database}
+      host: ${geekoj.redis.host}
+      port: ${geekoj.redis.port}
+      password: ${geekoj.redis.password}
       timeout: 5000
-      password: geektip
       lettuce:
         pool:
           enabled: true
-          # 连接池最大连接数
           max-active: 200
-          # 连接池最大阻塞等待时间（使用负值表示没有限制）
           max-wait: -1ms
-          # 连接池中的最大空闲连接
-          max-idle: 10
-          # 连接池中的最小空闲连接
+          max-idle: 50
           min-idle: 0
-server:
-  address: 0.0.0.0
-  port: 8100
-
-knife4j:
-  gateway:
-    enabled: true
-    tags-sorter: order
-    operations-sorter: order
-    discover:
-      enabled: true
-      version: openapi3
-    strategy: discover
-
 cors:
-  allowed-origins: "http://localhost:8080"
-  allowed-methods: "*"
+  allowed-origin: ${geekoj.base.url}
+  allowed-methods: GET, POST, PUT, DELETE, OPTIONS
+  allowed-headers: content-type, x-requested-with, sa-token, *
   max-age: 3600
-  allowed-headers: "content-type, x-requested-with, Token, sa-token, *"
+system:
+  security:
+    no-auth-apis:
+      - /api/user
+      - /api/user/info
+      - /api/user/register
+      - /api/user/login
+      - /api/user/loginByPhone
+      - /api/user/sms/sendCode
+      - /api/user/email/sendCode
+      - /api/user/oauth2.0/gitee/success
+      - /api/oj/question/page/vo/safe
+      - /api/oj/question/tags
+      - /api/oj/question_submit/page/vo
+      - /api/oj/question_submit/summary

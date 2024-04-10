@@ -14,7 +14,7 @@ import static cc.geektip.geekoj.common.constant.MqConstant.TOPIC_CODE;
 
 /**
  * @description: 验证码消息消费者
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Slf4j
@@ -38,7 +38,7 @@ public class SendCodeMQConsumer implements RocketMQListener<SendCodeMsg> {
             } else if ("mail".equals(type)) {
                 mailUtil.sendMail(dest, codeNum);
             }
-            log.info("消费MQ消息，完成 topic：{} dest：{} code：{}", TOPIC_CODE, dest, codeNum);
+            log.debug("消费MQ消息，完成 topic：{} dest：{} code：{}", TOPIC_CODE, dest, codeNum);
         } catch (Exception e) {
             log.error("消费MQ消息，失败 topic：{} dest：{} code：{}", TOPIC_CODE, dest, codeNum);
             throw e;

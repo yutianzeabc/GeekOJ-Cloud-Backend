@@ -27,7 +27,7 @@ public class UserController {
      */
     @GetMapping("/info")
     public R<UserInfoVo> getCurrentUser(){
-        UserInfoVo currentUser = sessionUtils.getCurrentUser();
+        UserInfoVo currentUser = sessionUtils.getCurrentUserPermitNull();
         return R.ok(currentUser);
     }
 

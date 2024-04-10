@@ -5,10 +5,10 @@
     <parent>
         <groupId>cc.geektip</groupId>
         <artifactId>geekoj-backend-microservice</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     <artifactId>geekoj-backend-question-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>geekoj-backend-question-service</name>
     <description>geekoj-backend-question-service</description>
     <dependencies>
@@ -32,12 +32,12 @@
         <dependency>
             <groupId>cc.geektip</groupId>
             <artifactId>geekoj-backend-api</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>cc.geektip</groupId>
             <artifactId>geekoj-backend-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

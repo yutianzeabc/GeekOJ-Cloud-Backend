@@ -10,8 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @description: Knife4j配置
- * @author: Fish
- *
+ * @author: Bill Yu
  */
 @Configuration
 public class OpenAPIConfig {
@@ -26,8 +25,7 @@ public class OpenAPIConfig {
                         .version(apiDocProperties.getVersion())
                         .description(apiDocProperties.getDescription())
                         .contact(new Contact().name(apiDocProperties.getContact().getName())
-                                .url(apiDocProperties.getContact().getUrl())
-                                .email(apiDocProperties.getContact().getEmail()))
+                                .url(apiDocProperties.getContact().getUrl()))
                         .license(new License().name(apiDocProperties.getLicense().getName())
                                 .url(apiDocProperties.getLicense().getUrl())));
     }

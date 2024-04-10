@@ -6,8 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @description: OSS 配置类
- * @author: Fish
- * @date: 2024/4/1
+ * @author: Bill Yu
  */
 @Data
 @Configuration

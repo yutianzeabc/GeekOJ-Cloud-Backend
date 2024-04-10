@@ -23,12 +23,6 @@ public class SmsUtils {
     private String templateId;
 
     public void sendCode(String phone, String code) {
-        // 目前禁用短信发送
-        throw new BusinessException(AppHttpCodeEnum.INTERNAL_SERVER_ERROR, "短信发送当前不可用");
-    }
-
-    public void sendCodeInner(String phone, String code) {
-
         try {
             // 认证榛子云接口
             ZhenziSmsClient client = new ZhenziSmsClient(apiUrl, appId, appSecret);
@@ -47,10 +41,11 @@ public class SmsUtils {
             Map map = JSON.parseObject(result, Map.class);
             int status = (int) map.get("code");
             if (status == 0) {
-                log.info("短信发送成功！手机号：{}，验证码：{}", phone, code);
+                log.debug("短信发送成功！手机号：{}，验证码：{}", phone, code);
             }
         } catch (Exception e) {
             throw new BusinessException(AppHttpCodeEnum.INTERNAL_SERVER_ERROR, "短信发送失败");
         }
     }
+
 }

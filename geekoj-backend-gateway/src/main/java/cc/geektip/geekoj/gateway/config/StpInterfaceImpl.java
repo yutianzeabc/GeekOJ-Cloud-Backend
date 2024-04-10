@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * @description: Sa-Token 权限验证接口实现类
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 
@@ -28,8 +28,8 @@ public class StpInterfaceImpl implements StpInterface {
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
         try {
-            UserInfoVo loginUserVO = StpUtil.getSessionByLoginId(loginId).getModel(SaSession.USER, UserInfoVo.class);
-            return List.of(loginUserVO.getUserRole());
+            UserInfoVo currentUser = StpUtil.getSessionByLoginId(loginId).getModel(SaSession.USER, UserInfoVo.class);
+            return List.of(currentUser.getUserRole());
         } catch (Exception e) {
             log.error("获取角色列表失败", e);
             return null;

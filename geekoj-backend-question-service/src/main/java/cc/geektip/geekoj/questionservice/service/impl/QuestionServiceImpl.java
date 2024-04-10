@@ -1,22 +1,32 @@
 package cc.geektip.geekoj.questionservice.service.impl;
 
+import cc.geektip.geekoj.api.model.dto.judge.JudgeCase;
 import cc.geektip.geekoj.api.model.dto.judge.JudgeConfig;
+import cc.geektip.geekoj.api.model.dto.question.QuestionAddRequest;
+import cc.geektip.geekoj.api.model.dto.question.QuestionEditRequest;
 import cc.geektip.geekoj.api.model.dto.question.QuestionQueryRequest;
+import cc.geektip.geekoj.api.model.dto.question.QuestionUpdateRequest;
 import cc.geektip.geekoj.api.model.entity.question.Question;
 import cc.geektip.geekoj.api.model.entity.question.QuestionSubmit;
 import cc.geektip.geekoj.api.model.enums.question.QuestionSubmitStatusEnum;
 import cc.geektip.geekoj.api.model.enums.question.UserQuestionStatusEnum;
+import cc.geektip.geekoj.api.model.vo.question.QuestionVo;
 import cc.geektip.geekoj.api.model.vo.question.SafeQuestionVo;
+import cc.geektip.geekoj.api.model.vo.user.UserInfoVo;
 import cc.geektip.geekoj.api.service.question.QuestionService;
 import cc.geektip.geekoj.api.service.question.QuestionSubmitService;
+import cc.geektip.geekoj.common.common.AppHttpCodeEnum;
 import cc.geektip.geekoj.common.constant.CommonConstant;
+import cc.geektip.geekoj.common.exception.ThrowUtils;
 import cc.geektip.geekoj.common.utils.SqlUtils;
 import cc.geektip.geekoj.questionservice.mapper.QuestionMapper;
 import cc.geektip.geekoj.questionservice.utils.SessionUtils;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
@@ -105,9 +115,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
 
         // 拼接查询条件
         boolean likeQuery = StringUtils.isNotBlank(keyword);
-        queryWrapper.like(likeQuery, "title", keyword);
-        queryWrapper.like(likeQuery, "content", keyword);
-        queryWrapper.like(likeQuery, "answer", keyword);
+        queryWrapper.and(likeQuery, wrapper -> wrapper.like("title", keyword));
         if (CollUtil.isNotEmpty(tags)) {
             for (String tag : tags) {
                 queryWrapper.like("tags", "\"" + tag + "\"");
@@ -119,9 +127,8 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         return queryWrapper;
     }
 
-
     @Override
-    public SafeQuestionVo objToVo(Question question, Long uid) {
+    public SafeQuestionVo objToVo(Question question, UserInfoVo currentUser) {
         if (question == null) {
             return null;
         }
@@ -130,12 +137,15 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         safeQuestionVO.setTags(JSONUtil.toList(question.getTags(), String.class));
         safeQuestionVO.setJudgeConfig(JSONUtil.toBean(question.getJudgeConfig(), JudgeConfig.class));
 
+        if (currentUser == null) {
+            return safeQuestionVO;
+        }
         var questionSubmitMapper = questionSubmitService.getBaseMapper();
         //查询当前用户历史做题信息（已通过、尝试过、未开始）
         QuestionSubmit submit = questionSubmitMapper.selectOne(new QueryWrapper<QuestionSubmit>()
                 .select("max(status) as status").lambda()
                 .eq(QuestionSubmit::getQuestionId, question.getId())
-                .eq(QuestionSubmit::getUserId, uid));
+                .eq(QuestionSubmit::getUserId, currentUser.getUid()));
 
         if (submit == null) {
             safeQuestionVO.setStatus(UserQuestionStatusEnum.NOT_STARTED.getText());
@@ -151,6 +161,15 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     }
 
     @Override
+    public String getQuestionTitleById(Long questionId) {
+        return lambdaQuery().select(Question::getTitle)
+                .eq(Question::getId, questionId)
+                .oneOpt()
+                .map(Question::getTitle)
+                .orElse(null);
+    }
+
+    @Override
     public List<String> getQuestionTags() {
         return lambdaQuery().select(Question::getTags)
                 .list()
@@ -158,6 +177,101 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
                 .flatMap(question -> JSONUtil.toList(question.getTags(), String.class).stream())
                 .distinct()
                 .toList();
+    }
+
+    @Override
+    public Page<QuestionVo> listQuestionVoByPage(QuestionQueryRequest questionQueryRequest) {
+        long pageNum = questionQueryRequest.getPageNum();
+        long pageSize = questionQueryRequest.getPageSize();
+        Page<Question> questionPage = page(new Page<>(pageNum, pageSize), getQueryWrapper(questionQueryRequest));
+        List<QuestionVo> records = questionPage.getRecords().stream().map(QuestionVo::objToVo).toList();
+        Page<QuestionVo> page = new Page<>(pageNum, pageSize, questionPage.getTotal());
+        page.setRecords(records);
+        return page;
+    }
+
+    @Override
+    public Question addQuestion(QuestionAddRequest questionAddRequest) {
+        UserInfoVo currentUser = sessionUtils.getCurrentUser();
+        Question question = new Question();
+        BeanUtils.copyProperties(questionAddRequest, question);
+        question.setUserId(currentUser.getUid());
+        List<String> tags = questionAddRequest.getTags();
+        question.setTags(JSON.toJSONString(tags));
+        List<JudgeCase> judgeCase = questionAddRequest.getJudgeCase();
+        question.setJudgeCase(JSON.toJSONString(judgeCase));
+        JudgeConfig judgeConfig = questionAddRequest.getJudgeConfig();
+        question.setJudgeConfig(JSON.toJSONString(judgeConfig));
+
+        boolean ok = save(question);
+        ThrowUtils.throwIf(!ok, AppHttpCodeEnum.INTERNAL_SERVER_ERROR);
+        return question;
+    }
+
+    @Override
+    public boolean updateQuestion(QuestionUpdateRequest questionUpdateRequest) {
+        Question question = new Question();
+        BeanUtils.copyProperties(questionUpdateRequest, question);
+        question.setTags(JSON.toJSONString(questionUpdateRequest.getTags()));
+        question.setJudgeCase(JSON.toJSONString(questionUpdateRequest.getJudgeCase()));
+        question.setJudgeConfig(JSON.toJSONString(questionUpdateRequest.getJudgeConfig()));
+
+        long id = questionUpdateRequest.getId();
+        Question oldQuestion = getById(id);
+        ThrowUtils.throwIf(oldQuestion == null, AppHttpCodeEnum.NOT_EXIST);
+        return updateById(question);
+    }
+
+    @Override
+    public QuestionVo getQuestionVoById(Long id) {
+        Question question = getById(id);
+        ThrowUtils.throwIf(question == null, AppHttpCodeEnum.NOT_EXIST);
+        return QuestionVo.objToVo(question);
+    }
+
+    @Override
+    public boolean deleteQuestion(Long id) {
+        Question oldQuestion = getById(id);
+        ThrowUtils.throwIf(oldQuestion == null, AppHttpCodeEnum.NOT_EXIST);
+        return removeById(id);
+    }
+
+    @Override
+    public boolean editQuestion(QuestionEditRequest questionEditRequest) {
+        Question question = new Question();
+        BeanUtils.copyProperties(questionEditRequest, question);
+
+        long id = questionEditRequest.getId();
+        Question oldQuestion = getById(id);
+        ThrowUtils.throwIf(oldQuestion == null, AppHttpCodeEnum.NOT_EXIST);
+        return updateById(question);
+    }
+
+    @Override
+    public SafeQuestionVo getSafeQuestionVoById(Long id) {
+        UserInfoVo currentUser = sessionUtils.getCurrentUser();
+        Question question = getById(id);
+        ThrowUtils.throwIf(question == null, AppHttpCodeEnum.NOT_EXIST);
+        return objToVo(question, currentUser);
+    }
+
+    @Override
+    public Page<SafeQuestionVo> listSafeQuestionVoByPage(QuestionQueryRequest questionQueryRequest) {
+        long pageNum = questionQueryRequest.getPageNum();
+        long pageSize = questionQueryRequest.getPageSize();
+        // 限制爬虫
+        ThrowUtils.throwIf(pageSize > 20, AppHttpCodeEnum.PARAMS_ERROR);
+
+        QueryWrapper<Question> queryWrapper = getQueryWrapper(questionQueryRequest);
+        Page<Question> questionPage = page(new Page<>(pageNum, pageSize), queryWrapper);
+        UserInfoVo currentUser = sessionUtils.getCurrentUserPermitNull();
+        List<SafeQuestionVo> records = questionPage.getRecords().stream()
+                .map(question -> objToVo(question, currentUser))
+                .toList();
+        Page<SafeQuestionVo> page = new Page<>(pageNum, pageSize, questionPage.getTotal());
+        page.setRecords(records);
+
+        return page;
     }
 
     @Override

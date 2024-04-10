@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @description: MyBatis Plus 配置类
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Configuration

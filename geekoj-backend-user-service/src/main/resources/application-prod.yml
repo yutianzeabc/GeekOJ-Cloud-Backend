@@ -1,0 +1,53 @@
+# 生产环境配置文件
+spring:
+  application:
+    name: geekoj-backend-user-service
+server:
+  port: 8101
+geekoj:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:prod}
+  base:
+    url: ${BACKEND_URL:http://localhost:8100}
+  mysql:
+    database: ${MYSQL_DATABASE:geekoj_cloud}
+    host: ${MYSQL_HOST:localhost}
+    port: ${MYSQL_PORT:3306}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:123456}
+  nacos:
+    host: ${NACOS_HOST:localhost}
+    port: ${NACOS_PORT:8848}
+    username: ${NACOS_USERNAME:nacos}
+    password: ${NACOS_PASSWORD:nacos}
+  sentinel:
+    host: ${SENTINEL_HOST:localhost}
+    port: ${SENTINEL_PORT:8858}
+  redis:
+    database: ${REDIS_DATABASE:0}
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:123456}
+  rocketmq:
+    host: ${ROCKETMQ_HOST:localhost}
+    port: ${ROCKETMQ_PORT:9876}
+    group: ${ROCKETMQ_GROUP:geekoj}
+  dubbo:
+    port: ${DUBBO_PORT:-1}
+  mail:
+    host: ${MAIL_HOST}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    port: ${MAIL_PORT}
+  sms:
+    apiUrl: ${SMS_API_URL}
+    appId: ${SMS_APP_ID}
+    appSecret: ${SMS_APP_SECRET}
+    templateId: ${SMS_TEMPLATE_ID}
+  oss:
+    accessKey: ${OSS_ACCESS_KEY}
+    secretKey: ${OSS_SECRET_KEY}
+    bucket: ${OSS_BUCKET}
+    domain: ${OSS_DOMAIN}
+knife4j:
+  production: true

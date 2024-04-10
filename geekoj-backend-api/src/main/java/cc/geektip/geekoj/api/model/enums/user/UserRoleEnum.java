@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author Fish
+ * @author Bill Yu
  * @description 用户角色枚举
  */
 @Getter

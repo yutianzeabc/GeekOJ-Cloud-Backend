@@ -42,15 +42,14 @@ public class OAuth2Controller {
         map.put("redirect_uri", giteeOAuthProperties.getRedirectUri());
         map.put("code", code);
 
-        //1、根据用户授权返回的code换取access_token
+        // 1、根据用户授权返回的code换取access_token
         HttpResponse res = HttpUtils.doPost("https://gitee.com", "/oauth/token", "post", new HashMap<>(), map, new HashMap<>());
-        //2、处理
+        // 2、OAuthLogin
         if (res.getStatusLine().getStatusCode() == 200) {
-            //获取到了access_token,转为社交登录对象
+            // 获取到了access_token,转为社交登录对象
             String json = EntityUtils.toString(res.getEntity());
             SocialUser socialUser = JSON.parseObject(json, SocialUser.class);
-
-            //第一次使用社交帐号登录自动注册（在远程调用方法中已经将token保存至redis中）
+            // 第一次使用社交帐号登录自动注册
             userService.oauthLogin(socialUser);
             return "redirect:https://oj.geektip.cc";
         }

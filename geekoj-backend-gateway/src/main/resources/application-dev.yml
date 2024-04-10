@@ -1,0 +1,33 @@
+# 开发环境配置文件
+spring:
+  application:
+    name: geekoj-backend-gateway
+server:
+  port: 8100
+geekoj:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  base:
+    url: ${BACKEND_URL:http://localhost:8100}
+  nacos:
+    host: ${NACOS_HOST:localhost}
+    port: ${NACOS_PORT:8848}
+    username: ${NACOS_USERNAME:nacos}
+    password: ${NACOS_PASSWORD:nacos}
+  sentinel:
+    host: ${SENTINEL_HOST:localhost}
+    port: ${SENTINEL_PORT:8858}
+  redis:
+    database: ${REDIS_DATABASE:0}
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:123456}
+knife4j:
+  gateway:
+    enabled: true
+    tags-sorter: order
+    operations-sorter: order
+    discover:
+      enabled: true
+      version: openapi3
+    strategy: discover

@@ -26,12 +26,11 @@ public class LoginController {
 
     /**
      * 发送手机验证码
-     * @param phone 手机号
+     * @param phone
      * @return
      */
     @GetMapping(value = "/sms/sendCode")
     public R sendCode(@Pattern(regexp = "^[1]([3-9])[0-9]{9}$", message = "手机号格式不正确") @RequestParam("phone") String phone) {
-        //如果有错误回到注册页面
         userService.sendCode(phone, PHONE_CODE);
         return R.ok();
     }

@@ -32,7 +32,7 @@ import static cc.geektip.geekoj.common.constant.SystemConstant.TAG_COLORS;
 
 /**
  * @description: 用户标签服务实现类
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Slf4j

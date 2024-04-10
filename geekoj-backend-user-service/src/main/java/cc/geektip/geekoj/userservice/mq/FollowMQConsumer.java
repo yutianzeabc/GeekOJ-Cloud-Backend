@@ -19,7 +19,7 @@ import static cc.geektip.geekoj.common.constant.MqConstant.TOPIC_FOLLOW;
 
 /**
  * @description: 关注消息消费者
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Slf4j
@@ -54,7 +54,7 @@ public class FollowMQConsumer implements RocketMQListener<Follow> {
                 redisTemplate.expire(toUserFansKey, RedisConstant.USER_FOLLOWS_FANS_TTL, TimeUnit.HOURS);
             }
 
-            log.info("取消关注成功，uid：{} followUid：{}", follow.getUid(), follow.getFollowUid());
+            log.debug("取消关注成功，uid：{} followUid：{}", follow.getUid(), follow.getFollowUid());
         } else {
             // 2.2 如果未关注，添加关注
             followService.save(follow);
@@ -68,7 +68,7 @@ public class FollowMQConsumer implements RocketMQListener<Follow> {
                 redisTemplate.opsForSet().add(toUserFansKey, follow.getUid());
                 redisTemplate.expire(toUserFansKey, RedisConstant.USER_FOLLOWS_FANS_TTL, TimeUnit.HOURS);
             }
-            log.info("关注成功，uid：{} followUid：{}", follow.getUid(), follow.getFollowUid());
+            log.debug("关注成功，uid：{} followUid：{}", follow.getUid(), follow.getFollowUid());
         }
     }
 }

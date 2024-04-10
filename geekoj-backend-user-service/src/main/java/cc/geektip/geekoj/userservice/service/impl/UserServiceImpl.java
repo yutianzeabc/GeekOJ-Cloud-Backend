@@ -13,6 +13,7 @@ import cc.geektip.geekoj.api.service.user.UserTagService;
 import cc.geektip.geekoj.common.common.AppHttpCodeEnum;
 import cc.geektip.geekoj.common.constant.RedisConstant;
 import cc.geektip.geekoj.common.exception.BusinessException;
+import cc.geektip.geekoj.common.exception.ThrowUtils;
 import cc.geektip.geekoj.common.utils.BeanCopyUtils;
 import cc.geektip.geekoj.common.utils.HttpUtils;
 import cc.geektip.geekoj.userservice.mapper.UserMapper;
@@ -46,7 +47,7 @@ import static cc.geektip.geekoj.common.constant.SystemConstant.USERNAME_PREFIX;
 
 /**
  * @description: 用户服务实现类
- * @author: Fish
+ * @author: Bill Yu
  */
 
 @Slf4j
@@ -238,11 +239,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User user = BeanCopyUtils.copyBean(updateVo, User.class);
         user.setTags(JSON.toJSONString(updateVo.getTags()));
         updateById(user);
-
         // 更新缓存
-        UserInfoVo userInfoVoNew = objToVo(user);
-        StpUtil.getSession().set(SaSession.USER, userInfoVoNew);
+        updateSessionCache(updateVo.getUid());
     }
+
 
     @Override
     public void updatePwd(PwdUpdateRequest pwdUpdateRequest) {
@@ -283,8 +283,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setPhone(phone);
         updateById(user);
         // 4. 更新缓存
-        userInfoVo.setPhone(phone);
-        StpUtil.getSession().set(SaSession.USER, userInfoVo);
+        updateSessionCache(userInfoVo.getUid());
     }
 
     @Override
@@ -309,8 +308,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setEmail(mail);
         updateById(user);
         // 4. 更新缓存
-        userInfoVo.setEmail(mail);
-        StpUtil.getSession().set(SaSession.USER, userInfoVo);
+        updateSessionCache(userInfoVo.getUid());
     }
 
     @Override
@@ -331,12 +329,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             userNew.setUsername(USERNAME_PREFIX + RandomUtil.randomString(6));
             save(userNew);
             StpUtil.login(userNew.getUid());
-            UserInfoVo userInfoVo = objToVo(userNew);
-            StpUtil.getSession().set(SaSession.USER, userInfoVo);
+            updateSessionCache(userNew.getUid());
         } else {
             StpUtil.login(user.getUid());
-            UserInfoVo userInfoVo = objToVo(user);
-            StpUtil.getSession().set(SaSession.USER, userInfoVo);
+            updateSessionCache(user.getUid());
         }
     }
 
@@ -416,5 +412,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             userInfoVo.setIsFollow(followService.isFollow(currentUid, user.getUid()));
         }
         return userInfoVo;
+    }
+
+    public void updateSessionCache(Long uid) {
+        User user = getById(uid);
+        ThrowUtils.throwIf(user == null, AppHttpCodeEnum.NOT_EXIST);
+        UserInfoVo userInfoVo = objToVo(user);
+        StpUtil.getSession().set(SaSession.USER, userInfoVo);
     }
 }

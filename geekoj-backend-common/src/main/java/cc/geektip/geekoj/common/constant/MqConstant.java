@@ -2,7 +2,7 @@ package cc.geektip.geekoj.common.constant;
 
 /**
  * @description: 消息队列常量类
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 public interface MqConstant {

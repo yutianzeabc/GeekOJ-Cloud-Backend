@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @description: 线程池配置类
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Configuration

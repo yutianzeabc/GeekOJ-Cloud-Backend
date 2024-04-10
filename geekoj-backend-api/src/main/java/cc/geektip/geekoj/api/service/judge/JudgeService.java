@@ -5,7 +5,7 @@ import cc.geektip.geekoj.api.model.entity.question.QuestionSubmit;
 import cc.geektip.geekoj.api.model.vo.question.QuestionRunResult;
 
 /**
- * @author Fish
+ * @author Bill Yu
  * @description 判题服务
  */
 public interface JudgeService {

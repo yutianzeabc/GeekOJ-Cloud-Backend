@@ -5,17 +5,17 @@
     <parent>
         <groupId>cc.geektip</groupId>
         <artifactId>geekoj-backend-microservice</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     <artifactId>geekoj-backend-api</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>geekoj-backend-api</name>
     <description>geekoj-backend-api</description>
     <dependencies>
         <dependency>
             <groupId>cc.geektip</groupId>
             <artifactId>geekoj-backend-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.0</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -44,11 +44,6 @@
                     <groupId>cn.dev33</groupId>
                     <artifactId>sa-token-redis-jackson</artifactId>
                 </exclusion>
-                <!-- Sa-Token 整合 SpringAOP 实现注解鉴权 -->
-                <exclusion>
-                    <groupId>cn.dev33</groupId>
-                    <artifactId>sa-token-spring-aop</artifactId>
-                </exclusion>
                 <!-- Sa-Token 整合 Dubbo -->
                 <exclusion>
                     <groupId>cn.dev33</groupId>
@@ -58,37 +53,6 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>17</source>
-                    <target>17</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot.version}</version>
-                <configuration>
-                    <mainClass>cc.geektip.geekoj.api.GeekojBackendClientApplication</mainClass>
-                    <skip>true</skip>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>repackage</id>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
     <repositories>
         <repository>
             <id>spring-milestones</id>

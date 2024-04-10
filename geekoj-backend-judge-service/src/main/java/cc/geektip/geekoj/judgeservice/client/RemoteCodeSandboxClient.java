@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 /**
  * @description: 远程代码沙箱OpenFeign客户端接口类
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 
-@FeignClient(name = "remoteCodeSandboxService", url = "${code-sandbox.remote.endpoint}")
+@FeignClient(name = "geekoj-code-sandbox", fallback = RemoteCodeSandboxFallback.class)
 public interface RemoteCodeSandboxClient {
     @PostMapping("/executeCode")
     ExecuteCodeResponse executeCode(@RequestHeader("x-service-key") String xServiceKey, @RequestBody ExecuteCodeRequest executeCodeRequest);

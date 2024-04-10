@@ -4,7 +4,7 @@ import lombok.Getter;
 
 /**
  * @description: 判题策略枚举类
- * @author: Fish
+ * @author: Bill Yu
  *
  */
 @Getter

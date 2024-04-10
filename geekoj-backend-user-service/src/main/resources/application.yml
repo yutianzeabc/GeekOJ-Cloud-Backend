@@ -1,47 +1,45 @@
-# 公共配置文件
 spring:
-  application:
-    name: geekoj-backend-user-service
-  # 默认 dev 环境
   profiles:
-    active: dev
-  # 支持 swagger3
+    active: ${geekoj.profiles.active}
+  servlet:
+    multipart:
+      max-file-size: 10MB
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  # session 配置
-  session:
-    # 30 天过期
-    timeout: 2592000
-  # 数据库配置
   jackson:
-    date-format: yyyy-MM-dd
+    date-format: yyyy-MM-dd HH:mm:ss
     time-zone: Asia/Shanghai
   freemarker:
     enabled: false
     check-template-location: false
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+      server-addr: ${geekoj.nacos.host}:${geekoj.nacos.port}
+      username: ${geekoj.nacos.username}
+      password: ${geekoj.nacos.password}
+    sentinel:
+      eager: true
+      transport:
+        dashboard: ${geekoj.sentinel.host}:${geekoj.sentinel.port}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://link:3306/geekoj_cloud
-    username: root
-    password: ytz
-  servlet:
-    multipart:
-      # 大小限制
-      max-file-size: 10MB
-  # Redis 配置
+    url: jdbc:mysql://${geekoj.mysql.host}:${geekoj.mysql.port}/${geekoj.mysql.database}
+    username: ${geekoj.mysql.username}
+    password: ${geekoj.mysql.password}
   data:
     redis:
-      database: 8
-      host: link
-      port: 6379
-      timeout: 5000
-      password: geektip
+      database: ${geekoj.redis.database}
+      host: ${geekoj.redis.host}
+      port: ${geekoj.redis.port}
+      password: ${geekoj.redis.password}
   mail:
-    host: smtp.qq.com
-    username: geekoj@foxmail.com
-    password: eivxpztiwqfvdiid
-    port: 587
+    host: ${geekoj.mail.host}
+    username: ${geekoj.mail.username}
+    password: ${geekoj.mail.password}
+    port: ${geekoj.mail.port}
     default-encoding: UTF-8
     protocol: smtp # 协议
     properties:
@@ -56,38 +54,24 @@ spring:
           starttls:
             enable: true
             required: true
-  cloud:
-    nacos:
-      discovery:
-        enabled: true
-      server-addr: link:8848
-      username: nacos
-      password: nacos
-rocketmq:
-  producer:
-    group: geekoj
-  name-server: link:9876
+# Dubbo 配置
 dubbo:
   application:
     name: GeekOJ
     version: 1.0.0
   registry:
-    address: nacos://link:8848?username=nacos&password=nacos
+    address: nacos://${geekoj.nacos.host}:${geekoj.nacos.port}?username=${geekoj.nacos.username}&password=${geekoj.nacos.password}
   protocol:
     name: dubbo
-    port: 20801
+    port: ${geekoj.dubbo.port}
   scan:
     base-packages: cc.geektip.geekoj.api
-server:
-  address: 0.0.0.0
-  port: 8101
-  servlet:
-    context-path: /api/user
-    # cookie 30 天过期
-    session:
-      cookie:
-        max-age: 2592000
-        path: /api
+# RocketMQ 配置
+rocketmq:
+  producer:
+    group: ${geekoj.rocketmq.group}
+  name-server: ${geekoj.rocketmq.host}:${geekoj.rocketmq.port}
+# MyBatis-Plus 配置
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
@@ -97,11 +81,17 @@ mybatis-plus:
       logic-delete-value: 1 # 逻辑已删除值（默认为 1）
       logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
       id-type: auto
+# Sa-Token 配置
 sa-token:
   # 打开 RPC 调用鉴权
   check-same-token: true
+  # 打开日志
   is-log: true
-
+# Servlet 配置
+server:
+  servlet:
+    context-path: /api/user
+# GeekOJ 配置
 geekoj:
   thread-pool:
     core-size: 20
@@ -109,31 +99,30 @@ geekoj:
     keep-alive-time: 10
   third-party:
     sms:
-      apiUrl:
-      appId:
-      appSecret:
-      templateId:
+      apiUrl: ${geekoj.sms.apiUrl}
+      appId: ${geekoj.sms.appId}
+      appSecret: ${geekoj.sms.appSecret}
+      templateId: ${geekoj.sms.templateId}
     oss:
-      accessKey: ***REMOVED***
-      secretKey: ***REMOVED***
-      bucket: ***REMOVED***
-      domain:
+      accessKey: ${geekoj.oss.accessKey}
+      secretKey: ${geekoj.oss.secretKey}
+      bucket: ${geekoj.oss.bucket}
+      domain: ${geekoj.oss.domain}
     oauth:
       gitee:
-        client_id: ***REMOVED***
-        client_secret: ***REMOVED***
+        client_id: ${geekoj.oauth.gitee.client_id}
+        client_secret: ${geekoj.oauth.gitee.client_secret}
         grant_type: authorization_code
-        redirect_uri: https://oj.geektip.cc/oauth2.0/gitee/success
-# 新版本3.0接口文档配置
+        redirect_uri: ${geekoj.oauth.gitee.redirect_uri}
+# SpringDoc 配置
 springdoc:
   info:
     title: "GeekOJ 用户服务"
     version: "1.0.0"
     description: "GeekOJ 用户服务接口文档"
     contact:
-      name: Fish
-      email: contact@geektip.cc
-      url: https://oj.geektip.cc
+      name: Bill Yu
+      url: ${geekoj.base.url}
     license:
       name: Apache 2.0
       url: https://www.apache.org/licenses/LICENSE-2.0.html

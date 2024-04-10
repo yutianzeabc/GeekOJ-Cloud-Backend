@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author Fish
+ * @author Bill Yu
  * @description 题目提交编程语言枚举
  */
 @Getter
@@ -16,8 +16,7 @@ public enum LanguageEnum implements Serializable {
 
     JAVA("Java", "java"),
     CPLUSPLUS("C++", "cpp"),
-    GOLANG("JavaScript", "javascript"),
-    PYTHON("Python", "python");
+    GOLANG("Golang", "go");
 
     private final String text;
 

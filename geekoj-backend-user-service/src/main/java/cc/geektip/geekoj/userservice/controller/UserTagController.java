@@ -27,12 +27,12 @@ public class UserTagController {
     }
 
     /**
-     * 添加一个标签
+     * 添加新标签
      * @param userTagAddRequest
      * @return
      */
-    @PutMapping
-    public R<UserTagVo> addATag(@RequestBody UserTagAddRequest userTagAddRequest){
+    @PostMapping("/add")
+    public R<UserTagVo> addNewTag(@RequestBody UserTagAddRequest userTagAddRequest){
         UserTagVo userTagVo = userTagService.addATag(userTagAddRequest);
         return R.ok(userTagVo);
     }

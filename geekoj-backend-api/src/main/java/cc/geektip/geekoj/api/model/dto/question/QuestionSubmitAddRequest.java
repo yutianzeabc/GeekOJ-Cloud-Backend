@@ -27,7 +27,7 @@ public class QuestionSubmitAddRequest implements Serializable {
      * 题目 id
      */
     @Min(1)
-    private Long QuestionId;
+    private Long questionId;
 
     @Serial
     private static final long serialVersionUID = 1L;

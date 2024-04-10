@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * @description: 默认判题策略，用于定义默认的判题逻辑，如果没有特殊的判题逻辑，可以使用该策略进行判题
- * @author: Fish
+ * @author: Bill Yu
  */
 @Component
 public class DefaultJudgeStrategy implements JudgeStrategy {

@@ -9,14 +9,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
-* @author Fish
+* @author Bill Yu
 * @description 针对表【question_submit(题目提交)】的数据库操作Service
 */
 public interface QuestionSubmitService extends IService<QuestionSubmit> {
 
     QuestionSubmit doQuestionSubmit(QuestionSubmitAddRequest questionSubmitAddRequest);
 
-    Page<QuestionSubmitVo> listQuestionSubmitVoByPage(QuestionSubmitQueryRequest questionSubmitQueryRequest);
+    Page<QuestionSubmitVo> listMyQuestionSubmitVoByPage(QuestionSubmitQueryRequest questionSubmitQueryRequest);
+
+    Page<QuestionSubmitVo> listAllQuestionSubmitVoByPage(QuestionSubmitQueryRequest queryRequest);
+
+    QuestionSubmitVo getQuestionSubmitVoById(Long id);
 
     QuestionSubmitSummaryVo getSubmitSummary();
 }
