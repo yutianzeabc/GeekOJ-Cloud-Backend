@@ -1,4 +1,4 @@
-FROM zulu-openjdk-alpine:8-latest
+FROM ibm-semeru-runtimes:open-8-jdk-jammy
 
 ENV JAVA_OPTS="-Dsentinel.dashboard.auth.username=sentinel -Dsentinel.dashboard.auth.password=sentinel"
 

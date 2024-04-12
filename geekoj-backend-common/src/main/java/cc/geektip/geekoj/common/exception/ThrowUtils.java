@@ -4,7 +4,6 @@ import cc.geektip.geekoj.common.common.AppHttpCodeEnum;
 
 /**
  * 异常抛出工具类
- *
  */
 public class ThrowUtils {
 

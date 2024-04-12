@@ -19,7 +19,7 @@ import static cc.geektip.geekoj.common.constant.MqConstant.TOPIC_JUDGE;
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(topic = TOPIC_JUDGE, consumerGroup = CONSUMER_GROUP_JUDGE, consumeMode = ConsumeMode.ORDERLY, maxReconsumeTimes = 2)
+@RocketMQMessageListener(topic = TOPIC_JUDGE, consumerGroup = CONSUMER_GROUP_JUDGE, consumeMode = ConsumeMode.ORDERLY, maxReconsumeTimes = 3)
 public class JudgeMQConsumer implements RocketMQListener<JudgeMQMsg> {
     @Resource
     private JudgeService judgeService;

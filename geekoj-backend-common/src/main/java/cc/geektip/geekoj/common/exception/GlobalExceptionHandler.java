@@ -14,16 +14,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-
+/**
+ * 全局异常处理器
+ */
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     @ResponseBody
     public R businessExceptionHandler(BusinessException e) {
-        //打印异常信息
         log.error("出现了异常！{}", e.getMessage());
-        //从异常对象中获取信息，封装成ResponseResult后返回
+
         return R.error(e.getCode(), e.getMessage());
     }
 
@@ -31,9 +32,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public R notLoginExceptionHandler(NotLoginException e) {
-        //打印异常信息
         log.error("出现了异常！{}", e.getMessage());
-        //从异常对象中获取信息，封装成ResponseResult后返回
         return R.error(AppHttpCodeEnum.NOT_LOGIN);
     }
 
@@ -41,9 +40,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public R notLoginExceptionHandler(NotRoleException e) {
-        //打印异常信息
         log.error("出现了异常！{}", e.getMessage());
-        //从异常对象中获取信息，封装成ResponseResult后返回
         return R.error(AppHttpCodeEnum.NO_AUTH);
     }
 
@@ -51,9 +48,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public R constraintViolationExceptionHandler(ConstraintViolationException e) {
-        //打印异常信息
         log.error("出现了异常！{}", e.getMessage());
-        //从异常对象中获取信息，封装成ResponseResult后返回
         return R.error(AppHttpCodeEnum.PARAMS_ERROR);
     }
 
@@ -61,9 +56,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public R methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
-        //打印异常信息
         log.error("出现了异常！{}", e.getMessage());
-        //从异常对象中获取信息，封装成ResponseResult后返回
         return R.error(AppHttpCodeEnum.PARAMS_ERROR);
     }
 
@@ -71,9 +64,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
     public R rateLimitExceptionHandler(BlockException e) {
-        //打印异常信息
         log.error("出现了异常！{}", e.getMessage());
-        //从异常对象中获取信息，封装成ResponseResult后返回
         return R.error(AppHttpCodeEnum.RATE_LIMIT);
     }
 
@@ -81,9 +72,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public R fallBackExceptionHandler(Exception e) {
-        //打印异常信息
         log.error("出现了异常！{}", e.getMessage());
-        //从异常对象中获取信息，封装成ResponseResult后返回
         return R.error(AppHttpCodeEnum.INTERNAL_SERVER_ERROR.getCode(), e.getMessage());
     }
 }
