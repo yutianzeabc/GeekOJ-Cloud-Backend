@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "cors")
 public class CorsProperties {
+    private boolean enabled;
     private String maxAge;
     private String allowedOrigin;
     private String allowedMethods;

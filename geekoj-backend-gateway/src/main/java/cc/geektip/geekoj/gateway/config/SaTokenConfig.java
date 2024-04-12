@@ -50,19 +50,17 @@ public class SaTokenConfig {
                 // 设置跨域 必须
                 .setBeforeAuth(obj -> {
                     var response = SaHolder.getResponse();
-                    response.setHeader("Access-Control-Allow-Credentials", "true")
-                            // 允许指定域访问跨域资源
-                            .setHeader("Access-Control-Allow-Origin", CorsProperties.getAllowedOrigin())
-                            // 允许所有请求方式
-                            .setHeader("Access-Control-Allow-Methods", CorsProperties.getAllowedMethods())
-                            // 有效时间
-                            .setHeader("Access-Control-Max-Age", CorsProperties.getMaxAge())
-                            // 允许携带cookie
-                            .setHeader("Access-Control-Allow-Headers", CorsProperties.getAllowedHeaders())
-                            // 是否可以在iframe显示视图： DENY=不可以 | SAMEORIGIN=同域下可以 | ALLOW-FROM uri=指定域名下可以
-                            .setHeader("X-Frame-Options", "SAMEORIGIN")
-                            // 是否启用浏览器默认XSS防护： 0=禁用 | 1=启用 | 1; mode=block 启用, 并在检查到XSS攻击时，停止渲染页面
-                            .setHeader("X-XSS-Protection", "1; mode=block");
+                    if (CorsProperties.isEnabled()) {
+                        response.setHeader("Access-Control-Allow-Credentials", "true")
+                                // 允许指定域访问跨域资源
+                                .setHeader("Access-Control-Allow-Origin", CorsProperties.getAllowedOrigin())
+                                // 允许所有请求方式
+                                .setHeader("Access-Control-Allow-Methods", CorsProperties.getAllowedMethods())
+                                // 有效时间
+                                .setHeader("Access-Control-Max-Age", CorsProperties.getMaxAge())
+                                // 允许携带cookie
+                                .setHeader("Access-Control-Allow-Headers", CorsProperties.getAllowedHeaders());
+                    }
                     // 如果是预检请求，则立即返回到前端
                     SaRouter.match(SaHttpMethod.OPTIONS).back();
                     // 如果该接口被禁用，则返回禁用信息
