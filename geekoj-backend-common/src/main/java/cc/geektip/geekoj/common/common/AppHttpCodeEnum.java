@@ -46,7 +46,7 @@ public enum AppHttpCodeEnum implements Serializable {
 
     // 系统限制
     DISABLED_FUNCTION(30001, "该功能被管理员禁用"),
-    DEMO_MODE(30002, "项目演示模式，该功能暂时禁用"),;
+    DEMO_MODE(30002, "线上演示模式，该功能暂时禁用"),;
 
 
     public final int code;

@@ -49,5 +49,11 @@ geekoj:
     secretKey: ${OSS_SECRET_KEY}
     bucket: ${OSS_BUCKET}
     domain: ${OSS_DOMAIN}
+  oauth:
+    gitee:
+      client_id: ${GITEE_CLIENT_ID}
+      client_secret: ${GITEE_CLIENT_SECRET}
+      redirect_uri: ${GITEE_REDIRECT_URI}
+
 knife4j:
   production: true

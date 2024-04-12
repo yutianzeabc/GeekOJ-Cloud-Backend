@@ -9,6 +9,8 @@ geekoj:
     active: ${SPRING_PROFILES_ACTIVE:prod}
   base:
     url: ${BACKEND_URL:http://localhost:8100}
+  cors:
+    enabled: false
   nacos:
     host: ${NACOS_HOST:localhost}
     port: ${NACOS_PORT:8848}

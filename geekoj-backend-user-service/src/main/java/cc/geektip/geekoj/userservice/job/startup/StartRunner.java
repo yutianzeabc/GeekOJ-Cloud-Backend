@@ -7,9 +7,9 @@ import cc.geektip.geekoj.api.service.user.UserTagCategoryService;
 import cc.geektip.geekoj.api.service.user.UserTagService;
 import cc.geektip.geekoj.common.utils.BeanCopyUtils;
 import cc.geektip.geekoj.userservice.utils.RedisUtils;
+import cn.hutool.core.collection.CollUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -35,7 +35,7 @@ public class StartRunner implements CommandLineRunner {
     public void run(String... args) {
         //首先查询所有的类别
         List<UserTagCategory> userTagCategories = userTagCategoryService.list();
-        if(CollectionUtils.isNotEmpty(userTagCategories)){
+        if (CollUtil.isNotEmpty(userTagCategories)) {
             stringRedisTemplate.delete(USER_TAGS_CATEGORY);
             redisUtils.rightPushAllAsString(USER_TAGS_CATEGORY, userTagCategories);
         }
@@ -48,7 +48,7 @@ public class StartRunner implements CommandLineRunner {
                     .stream()
                     .map(userTag -> BeanCopyUtils.copyBean(userTag, UserTagVo.class))
                     .toList();
-            if(CollectionUtils.isNotEmpty(userTags)){
+            if (CollUtil.isNotEmpty(userTags)) {
                 String redisKey = USER_TAGS_PREFIX + userTagCategory.getId();
                 stringRedisTemplate.delete(redisKey);
                 redisUtils.rightPushAllAsString(redisKey, userTags);

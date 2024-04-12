@@ -1,0 +1,29 @@
+{
+    email {$SERVER_EMAIL}
+    key_type p256
+    admin off
+}
+
+{$SERVER_DOMAIN} {
+    encode zstd gzip
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-XSS-Protection "1; mode=block"
+        X-Frame-Options "SAMEORIGIN"
+        X-Robots-Tag "none"
+        -Server
+    }
+    tls {
+        ciphers TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+    }
+	handle /api/* {
+		reverse_proxy {$BACKEND_HOST}:{$BACKEND_PORT} {
+            header_up +X-Real-IP {remote_host}
+        }
+	}
+    handle {
+    	root * /usr/share/caddy
+        try_files {path} /index.html
+        file_server
+    }
+}

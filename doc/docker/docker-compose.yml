@@ -1,0 +1,313 @@
+version: '3.8'
+services:
+  geekoj-redis:
+    image: redis:7-alpine
+    container_name: geekoj-redis
+    restart: unless-stopped
+    volumes:
+      - ${GEEKOJ_DIRECTORY}/data/redis/data:/data
+    ports:
+      - ${REDIS_PORT:-6379}:6379
+    command: redis-server --requirepass ${REDIS_PASSWORD:-123456} --appendonly yes
+    networks:
+      geekoj-network:
+        ipv4_address: ${REDIS_HOST:-192.168.0.2}
+
+  geekoj-nacos:
+    image: nacos/nacos-server:v2.3.2-slim
+    container_name: geekoj-nacos
+    restart: unless-stopped
+    environment:
+      - JVM_XMX=256m
+      - JVM_XMS=256m
+      - JVM_XMN=128m
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - MYSQL_SERVICE_HOST=${MYSQL_HOST:-localhost}
+      - MYSQL_SERVICE_PORT=${MYSQL_PORT:-3306}
+      - MYSQL_SERVICE_USER=${MYSQL_USERNAME:-root}
+      - MYSQL_SERVICE_PASSWORD=${MYSQL_PASSWORD:-123456}
+      - MYSQL_SERVICE_DB_NAME=geekoj_nacos
+      - NACOS_AUTH_ENABLE=true
+      - NACOS_AUTH_IDENTITY_KEY=${NACOS_USERNAME:-nacos}
+      - NACOS_AUTH_IDENTITY_VALUE=${NACOS_PASSWORD:-nacos}
+      - NACOS_AUTH_TOKEN=GEEKOJ012345678901234567890123456789012345678901234567890123456789
+    ports:
+      - ${NACOS_PORT:-8848}:8848
+      - "9848:9848"
+      - "9849:9849"
+    networks:
+      geekoj-network:
+        ipv4_address: ${NACOS_HOST:-192.168.0.4}
+
+  geekoj-sentinel:
+    build: src/sentinel
+    container_name: geekoj-sentinel
+    restart: unless-stopped
+    environment:
+      JAVA_OPTS: -Dsentinel.dashboard.auth.username=${SENTINEL_USERNAME:-sentinel} -Dsentinel.dashboard.auth.password=${SENTINEL_PASSWORD:-123456}
+    ports:
+      - ${SENTINEL_PORT:-8858}:8858
+    networks:
+      geekoj-network:
+        ipv4_address: ${SENTINEL_HOST:-192.168.0.5}
+
+  geekoj-rocketmq-namesrv:
+    image: apache/rocketmq:5.2.0
+    container_name: geekoj-rocketmq-namesrv
+    command: sh mqnamesrv
+    ports:
+      - "9876:9876"
+    volumes:
+      - ${GEEKOJ_DIRECTORY}/data/rocketmq/logs:/home/rocketmq/logs
+    environment:
+      JAVA_OPT_EXT: -server -Xms256m -Xmx512m -Xmn192m
+    networks:
+      geekoj-network:
+        ipv4_address: ${ROCKETMQ_HOST:-192.168.0.10}
+
+  geekoj-rocketmq-broker:
+    image: apache/rocketmq:5.2.0
+    container_name: geekoj-rocketmq-broker
+    command: sh mqbroker
+    restart: unless-stopped
+    depends_on:
+      - geekoj-rocketmq-namesrv
+    ports:
+      - "10909:10909"
+      - "10911:10911"
+      - "10912:10912"
+    volumes:
+      - ${GEEKOJ_DIRECTORY}/data/rocketmq/broker/conf/broker.conf:/home/rocketmq/broker.conf
+      - ${GEEKOJ_DIRECTORY}/data/rocketmq/logs:/home/rocketmq/logs
+      - ${GEEKOJ_DIRECTORY}/data/rocketmq/broker/store:/home/rocketmq/store
+    environment:
+      NAMESRV_ADDR: geekoj-rocketmq-namesrv:9876
+      JAVA_OPT_EXT: -server -Xms256m -Xmx512m -Xmn192m
+    networks:
+      geekoj-network:
+        ipv4_address: ${ROCKETMQ_BROKER_HOST:-192.168.0.11}
+
+  geekoj-rocketmq-dashboard:
+    image: apacherocketmq/rocketmq-dashboard:latest
+    container_name: geekoj-rocketmq-dashboard
+    restart: unless-stopped
+    depends_on:
+      - geekoj-rocketmq-namesrv
+    environment:
+      JAVA_OPTS: -Dserver.port=19876 -Drocketmq.namesrv.addr=geekoj-rocketmq-namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false
+      JAVA_OPT_EXT: -Xms256m -Xmx512m -Xmn192m
+    ports:
+      - "19876:19876"
+    networks:
+      geekoj-network:
+        ipv4_address: ${ROCKETMQ_DASHBOARD_HOST:-192.168.0.12}
+
+  geekoj-frontend:
+    image: caddy:alpine
+    container_name: geekoj-frontend
+    restart: unless-stopped
+    volumes:
+      - ${GEEKOJ_DIRECTORY}/data/frontend/dist:/usr/share/caddy
+      - ${GEEKOJ_DIRECTORY}/data/frontend/Caddyfile:/etc/caddy/Caddyfile
+    environment:
+      - SERVER_DOMAIN=${SERVER_DOMAIN:-localhost}
+      - SERVER_EMAIL=${SERVER_EMAIL:-admin@localhost}
+      - BACKEND_HOST=${BACKEND_HOST:-192.168.0.20}
+      - BACKEND_PORT=${BACKEND_PORT:-8100}
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      geekoj-network:
+        ipv4_address: ${FRONTEND_HOST:-192.168.0.9}
+
+  geekoj-backend-gateway:
+    image: yutianzeabc/geekoj-backend-gateway:1.0.0
+    container_name: geekoj-backend-gateway
+    restart: unless-stopped
+    depends_on:
+      - geekoj-nacos
+      - geekoj-redis
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      - BACKEND_URL=${BACKEND_URL:-http://192.168.0.20:8100}
+      - NACOS_HOST=${NACOS_HOST:-192.168.0.4}
+      - NACOS_PORT=${NACOS_PORT:-8848}
+      - NACOS_USERNAME=${NACOS_USERNAME:-nacos}
+      - NACOS_PASSWORD=${NACOS_PASSWORD:-nacos}
+      - SENTINEL_HOST=${SENTINEL_HOST:-192.168.0.5}
+      - SENTINEL_PORT=${SENTINEL_PORT:-8858}
+      - REDIS_DATABASE=${REDIS_DATABASE:-0}
+      - REDIS_HOST=${REDIS_HOST:-192.168.0.2}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-123456}
+    ports:
+      - "8100:8100"
+    networks:
+      geekoj-network:
+        ipv4_address: ${BACKEND_HOST:-192.168.0.20}
+
+  geekoj-backend-user-service:
+    image: yutianzeabc/geekoj-backend-user-service:1.0.0
+    container_name: geekoj-backend-user-service
+    restart: unless-stopped
+    depends_on:
+      - geekoj-nacos
+      - geekoj-redis
+      - geekoj-rocketmq-namesrv
+      - geekoj-rocketmq-broker
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      - BACKEND_URL=${BACKEND_URL:-http://192.168.0.20:8100}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-geekoj_cloud}
+      - MYSQL_HOST=${MYSQL_HOST:-localhost}
+      - MYSQL_PORT=${MYSQL_PORT:-3306}
+      - MYSQL_USERNAME=${MYSQL_USERNAME:-root}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-123456}
+      - NACOS_HOST=${NACOS_HOST:-192.168.0.4}
+      - NACOS_PORT=${NACOS_PORT:-8848}
+      - NACOS_USERNAME=${NACOS_USERNAME:-nacos}
+      - NACOS_PASSWORD=${NACOS_PASSWORD:-nacos}
+      - SENTINEL_HOST=${SENTINEL_HOST:-192.168.0.5}
+      - SENTINEL_PORT=${SENTINEL_PORT:-8858}
+      - REDIS_DATABASE=${REDIS_DATABASE:-0}
+      - REDIS_HOST=${REDIS_HOST:-192.168.0.2}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-123456}
+      - ROCKETMQ_HOST=${ROCKETMQ_HOST:-192.168.0.10}
+      - ROCKETMQ_PORT=${ROCKETMQ_PORT:-9876}
+      - ROCKETMQ_GROUP=${ROCKETMQ_GROUP:-geekoj}
+      - DUBBO_PORT=${DUBBO_PORT:-1}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_PORT=${MAIL_PORT}
+      - SMS_API_URL=${SMS_API_URL}
+      - SMS_APP_ID=${SMS_APP_ID}
+      - SMS_APP_SECRET=${SMS_APP_SECRET}
+      - SMS_TEMPLATE_ID=${SMS_TEMPLATE_ID}
+      - OSS_ACCESS_KEY=${OSS_ACCESS_KEY}
+      - OSS_SECRET_KEY=${OSS_SECRET_KEY}
+      - OSS_BUCKET=${OSS_BUCKET}
+      - OSS_DOMAIN=${OSS_DOMAIN}
+      - GITEE_CLIENT_ID=${GITEE_CLIENT_ID}
+      - GITEE_CLIENT_SECRET=${GITEE_CLIENT_SECRET}
+      - GITEE_REDIRECT_URI=${GITEE_REDIRECT_URI}
+    ports:
+      - "8101:8101"
+    networks:
+      geekoj-network:
+        ipv4_address: ${USER_SERVICE_HOST:-192.168.0.21}
+
+  geekoj-backend-question-service:
+    image: yutianzeabc/geekoj-backend-question-service:1.0.0
+    container_name: geekoj-backend-question-service
+    restart: unless-stopped
+    depends_on:
+      - geekoj-nacos
+      - geekoj-redis
+      - geekoj-rocketmq-namesrv
+      - geekoj-rocketmq-broker
+      - geekoj-backend-user-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      - BACKEND_URL=${BACKEND_URL:-http://192.168.0.20:8100}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-geekoj_cloud}
+      - MYSQL_HOST=${MYSQL_HOST:-localhost}
+      - MYSQL_PORT=${MYSQL_PORT:-3306}
+      - MYSQL_USERNAME=${MYSQL_USERNAME:-root}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-123456}
+      - NACOS_HOST=${NACOS_HOST:-192.168.0.4}
+      - NACOS_PORT=${NACOS_PORT:-8848}
+      - NACOS_USERNAME=${NACOS_USERNAME:-nacos}
+      - NACOS_PASSWORD=${NACOS_PASSWORD:-nacos}
+      - SENTINEL_HOST=${SENTINEL_HOST:-192.168.0.5}
+      - SENTINEL_PORT=${SENTINEL_PORT:-8858}
+      - REDIS_DATABASE=${REDIS_DATABASE:-0}
+      - REDIS_HOST=${REDIS_HOST:-192.168.0.2}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-123456}
+      - ROCKETMQ_HOST=${ROCKETMQ_HOST:-192.168.0.10}
+      - ROCKETMQ_PORT=${ROCKETMQ_PORT:-9876}
+      - ROCKETMQ_GROUP=${ROCKETMQ_GROUP:-geekoj}
+      - DUBBO_PORT=${DUBBO_PORT:-1}
+    ports:
+      - "8102:8102"
+    networks:
+      geekoj-network:
+        ipv4_address: ${QUESTION_SERVICE_HOST:-192.168.0.22}
+
+  geekoj-backend-judge-service:
+    image: yutianzeabc/geekoj-backend-judge-service:1.0.0
+    container_name: geekoj-backend-judge-service
+    restart: unless-stopped
+    depends_on:
+      - geekoj-nacos
+      - geekoj-redis
+      - geekoj-rocketmq-namesrv
+      - geekoj-rocketmq-broker
+      - geekoj-backend-user-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      - BACKEND_URL=${BACKEND_URL:-http://192.168.0.20:8100}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-geekoj_cloud}
+      - MYSQL_HOST=${MYSQL_HOST:-localhost}
+      - MYSQL_PORT=${MYSQL_PORT:-3306}
+      - MYSQL_USERNAME=${MYSQL_USERNAME:-root}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-123456}
+      - NACOS_HOST=${NACOS_HOST:-192.168.0.4}
+      - NACOS_PORT=${NACOS_PORT:-8848}
+      - NACOS_USERNAME=${NACOS_USERNAME:-nacos}
+      - NACOS_PASSWORD=${NACOS_PASSWORD:-nacos}
+      - SENTINEL_HOST=${SENTINEL_HOST:-192.168.0.5}
+      - SENTINEL_PORT=${SENTINEL_PORT:-8858}
+      - REDIS_DATABASE=${REDIS_DATABASE:-0}
+      - REDIS_HOST=${REDIS_HOST:-192.168.0.2}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-123456}
+      - ROCKETMQ_HOST=${ROCKETMQ_HOST:-192.168.0.10}
+      - ROCKETMQ_PORT=${ROCKETMQ_PORT:-9876}
+      - ROCKETMQ_GROUP=${ROCKETMQ_GROUP:-geekoj}
+      - DUBBO_PORT=${DUBBO_PORT:-1}
+      - CODE_SANDBOX_TYPE=${CODE_SANDBOX_TYPE:-remote}
+      - CODE_SANDBOX_X_SERVICE_KEY=${CODE_SANDBOX_X_SERVICE_KEY:-162d6319-eca7-10c6-8005-14f7c3d296aa}
+    ports:
+      - "8103:8103"
+    networks:
+      geekoj-network:
+        ipv4_address: ${JUDGE_SERVICE_HOST:-192.168.0.23}
+
+  geekoj-code-sandbox:
+    image: yutianzeabc/geekoj-code-sandbox:1.0.0
+    container_name: geekoj-code-sandbox-1
+    restart: unless-stopped
+    depends_on:
+      - geekoj-nacos
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      - NACOS_HOST=${NACOS_HOST:-192.168.0.4}
+      - NACOS_PORT=${NACOS_PORT:-8848}
+      - NACOS_USERNAME=${NACOS_USERNAME:-nacos}
+      - NACOS_PASSWORD=${NACOS_PASSWORD:-nacos}
+      - CODE_SANDBOX_X_SERVICE_KEY=${CODE_SANDBOX_X_SERVICE_KEY:-162d6319-eca7-10c6-8005-14f7c3d296aa}
+      - CODE_SANDBOX_JUDGE_MODE=${CODE_SANDBOX_JUDGE_MODE:-acm}
+      - DOCKER_HOST=${DOCKER_HOST:-unix:///var/run/docker.sock}
+      - DOCKER_FIRST_INIT=${DOCKER_FIRST_INIT:-true}
+      - DOCKER_CONTAINER_CPU_COUNT=${DOCKER_CONTAINER_CPU_COUNT:-1}
+      - DOCKER_CONTAINER_MEMORY=${DOCKER_CONTAINER_MEMORY:-256}
+    ports:
+      - "8090:8090"
+    networks:
+      geekoj-network:
+        ipv4_address: ${CODE_SANDBOX_1_HOST:-192.168.0.24}
+
+networks:
+  geekoj-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${SUBNET:-192.168.0.0/24}
+          gateway: 192.168.0.1

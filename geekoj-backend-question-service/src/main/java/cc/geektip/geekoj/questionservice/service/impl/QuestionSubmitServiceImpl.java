@@ -105,7 +105,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         Page<QuestionSubmit> page = lambdaQuery().select(QuestionSubmit.class, item -> !item.getColumn().equals("code"))
                 .eq(QuestionSubmit::getUserId, currentUser.getUid())
                 .eq(queryRequest.getQuestionId() != null, QuestionSubmit::getQuestionId, questionId)
-                .orderByDesc(QuestionSubmit::getCreateTime)
+                .orderByDesc(QuestionSubmit::getId)
                 .page(new Page<>(pageNum, pageSize));
         List<QuestionSubmitVo> records = page.getRecords().parallelStream().map(submit -> objToVo(submit, currentUser)).toList();
         Page<QuestionSubmitVo> voPage = new Page<>(pageNum, pageSize, page.getTotal());
@@ -123,7 +123,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         Long questionId = queryRequest.getQuestionId();
         Page<QuestionSubmit> page = lambdaQuery().select(QuestionSubmit.class, item -> !item.getColumn().equals("code"))
                 .eq(queryRequest.getQuestionId() != null, QuestionSubmit::getQuestionId, questionId)
-                .orderByDesc(QuestionSubmit::getCreateTime)
+                .orderByDesc(QuestionSubmit::getId)
                 .page(new Page<>(pageNum, pageSize));
         List<QuestionSubmitVo> records = page.getRecords().parallelStream().map(submit -> objToVo(submit, currentUser)).toList();
         Page<QuestionSubmitVo> voPage = new Page<>(pageNum, pageSize, page.getTotal());
