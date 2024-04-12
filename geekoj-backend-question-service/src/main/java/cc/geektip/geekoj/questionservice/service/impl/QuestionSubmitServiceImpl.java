@@ -172,9 +172,9 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         long userId = currentUser.getUid();
 
         // 获取用户通过的简单、中等、困难题目数
-        Long easyPass = getBaseMapper().getPassCount(userId, easyIds);
-        Long mediumPass = getBaseMapper().getPassCount(userId, mediumIds);
-        Long hardPass = getBaseMapper().getPassCount(userId, hardIds);
+        Long easyPass = easyIds.isEmpty() ? 0L : getBaseMapper().getPassCount(userId, easyIds);
+        Long mediumPass = mediumIds.isEmpty() ? 0L : getBaseMapper().getPassCount(userId, mediumIds);
+        Long hardPass = hardIds.isEmpty() ? 0L : getBaseMapper().getPassCount(userId, hardIds);
         summaryVo.setEasyPass(easyPass);
         summaryVo.setMediumPass(mediumPass);
         summaryVo.setHardPass(hardPass);
