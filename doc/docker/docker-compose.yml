@@ -291,6 +291,7 @@ services:
       - geekoj-nacos
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ${CODE_SANDBOX_HOST_CODE_CACHE_PATH:-codeCache}:${CODE_SANDBOX_CODE_CACHE_PATH:-codeCache}
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
       - NACOS_HOST=${NACOS_HOST:-192.168.0.4}
@@ -299,6 +300,8 @@ services:
       - NACOS_PASSWORD=${NACOS_PASSWORD:-nacos}
       - CODE_SANDBOX_X_SERVICE_KEY=${CODE_SANDBOX_X_SERVICE_KEY:-162d6319-eca7-10c6-8005-14f7c3d296aa}
       - CODE_SANDBOX_JUDGE_MODE=${CODE_SANDBOX_JUDGE_MODE:-acm}
+      - CODE_SANDBOX_CODE_CACHE_PATH=${CODE_SANDBOX_CODE_CACHE_PATH:-codeCache}
+      - CODE_SANDBOX_HOST_CODE_CACHE_PATH=${CODE_SANDBOX_HOST_CODE_CACHE_PATH:-codeCache}
       - DOCKER_HOST=${DOCKER_HOST:-unix:///var/run/docker.sock}
       - DOCKER_FIRST_INIT=${DOCKER_FIRST_INIT:-true}
       - DOCKER_CONTAINER_CPU_COUNT=${DOCKER_CONTAINER_CPU_COUNT:-1}
