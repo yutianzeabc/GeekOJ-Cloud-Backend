@@ -14,7 +14,7 @@ public class TokenRefreshTask {
     /**
      * 定时刷新子服务之间调用令牌
      */
-    @Scheduled(cron = "0 0/5 * * ? ")
+    @Scheduled(cron = "0 0/10 * * * ?")
     public void refreshToken() {
         SaSameUtil.refreshToken();
     }
