@@ -7,6 +7,8 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+    async:
+      request-timeout: 60000
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: Asia/Shanghai
@@ -14,6 +16,14 @@ spring:
     enabled: false
     check-template-location: false
   cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connect-timeout: 5000
+            read-timeout: 60000
+      okhttp:
+        enabled: true
     nacos:
       discovery:
         enabled: true
