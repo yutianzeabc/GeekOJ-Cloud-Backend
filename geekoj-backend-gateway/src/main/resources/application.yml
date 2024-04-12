@@ -16,7 +16,9 @@ spring:
     sentinel:
       eager: true
       transport:
-        dashboard: ${geekoj.sentinel.host}:${geekoj.sentinel.port}
+        dashboard: ${geekoj.sentinel.host}:${geekoj.sentinel.dashboard.port}
+        port: ${geekoj.sentinel.api.port}
+        client-ip: ${geekoj.service.ip}
     gateway:
       routes:
         - id: geekoj-backend-user-service

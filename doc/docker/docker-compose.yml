@@ -47,7 +47,8 @@ services:
     environment:
       JAVA_OPTS: -Dsentinel.dashboard.auth.username=${SENTINEL_USERNAME:-sentinel} -Dsentinel.dashboard.auth.password=${SENTINEL_PASSWORD:-123456}
     ports:
-      - ${SENTINEL_PORT:-8858}:8858
+      - ${SENTINEL_DASHBOARD_PORT:-8858}:8858
+      - ${SENTINEL_API_PORT:-8719}:8719
     networks:
       geekoj-network:
         ipv4_address: ${SENTINEL_HOST:-192.168.0.5}
@@ -131,6 +132,7 @@ services:
       - geekoj-redis
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      - BACKEND_HOST=${BACKEND_HOST:-192.168.0.20}
       - BACKEND_URL=${BACKEND_URL:-http://192.168.0.20:8100}
       - NACOS_HOST=${NACOS_HOST:-192.168.0.4}
       - NACOS_PORT=${NACOS_PORT:-8848}
@@ -159,6 +161,7 @@ services:
       - geekoj-rocketmq-broker
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      - USER_SERVICE_HOST=${USER_SERVICE_HOST:-192.168.0.21}
       - BACKEND_URL=${BACKEND_URL:-http://192.168.0.20:8100}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-geekoj_cloud}
       - MYSQL_HOST=${MYSQL_HOST:-localhost}
@@ -212,6 +215,7 @@ services:
       - geekoj-backend-user-service
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      - QUESTION_SERVICE_HOST=${QUESTION_SERVICE_HOST:-192.168.0.22}
       - BACKEND_URL=${BACKEND_URL:-http://192.168.0.20:8100}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-geekoj_cloud}
       - MYSQL_HOST=${MYSQL_HOST:-localhost}
@@ -250,6 +254,7 @@ services:
       - geekoj-backend-user-service
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      - JUDGE_SERVICE_HOST=${JUDGE_SERVICE_HOST:-192.168.0.23}
       - BACKEND_URL=${BACKEND_URL:-http://192.168.0.20:8100}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-geekoj_cloud}
       - MYSQL_HOST=${MYSQL_HOST:-localhost}
@@ -306,6 +311,7 @@ services:
 
 networks:
   geekoj-network:
+    name: geekoj-network
     driver: bridge
     ipam:
       config:

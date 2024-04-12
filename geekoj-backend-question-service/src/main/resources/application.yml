@@ -23,7 +23,9 @@ spring:
     sentinel:
       eager: true
       transport:
-        dashboard: ${geekoj.sentinel.host}:${geekoj.sentinel.port}
+        dashboard: ${geekoj.sentinel.host}:${geekoj.sentinel.dashboard.port}
+        port: ${geekoj.sentinel.api.port}
+        client-ip: ${geekoj.service.ip}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${geekoj.mysql.host}:${geekoj.mysql.port}/${geekoj.mysql.database}

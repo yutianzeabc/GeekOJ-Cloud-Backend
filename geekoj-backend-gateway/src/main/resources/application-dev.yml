@@ -9,6 +9,8 @@ geekoj:
     active: ${SPRING_PROFILES_ACTIVE:dev}
   base:
     url: ${BACKEND_URL:http://localhost:8100}
+  service:
+    ip: ${BACKEND_HOST:localhost}
   cors:
     enabled: true
   nacos:
@@ -18,7 +20,10 @@ geekoj:
     password: ${NACOS_PASSWORD:nacos}
   sentinel:
     host: ${SENTINEL_HOST:localhost}
-    port: ${SENTINEL_PORT:8858}
+    dashboard:
+      port: ${SENTINEL_DASHBOARD_PORT:8858}
+    api:
+      port: ${SENTINEL_API_PORT:8719}
   redis:
     database: ${REDIS_DATABASE:0}
     host: ${REDIS_HOST:localhost}
