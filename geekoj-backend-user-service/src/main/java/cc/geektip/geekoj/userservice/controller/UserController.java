@@ -43,7 +43,7 @@ public class UserController {
     }
 
     /**
-     * 更新用户的密码（因为这个牵涉旧密码的比较，和基本信息更新的逻辑差异很大，所以不能写在一起）
+     * 更新用户的密码
      * @param pwdUpdateRequest
      * @return
      */

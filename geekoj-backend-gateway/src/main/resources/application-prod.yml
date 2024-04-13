@@ -36,14 +36,14 @@ system:
   security:
     check-disabled-apis: true
     disabled-apis:
-      - /api/user/register
+#      - /api/user/register
       - /api/user/loginByPhone
       - /api/user/sms/sendCode
-      - /api/user/email/sendCode
+#      - /api/user/email/sendCode
       - /api/user/update
-      - /api/user/pwd
+#      - /api/user/pwd
       - /api/user/phone
-      - /api/user/email
+#      - /api/user/email
       - /api/user/tags/add
       - /api/user/oss/policy
-      - /api/user/oauth2.0/gitee/success
+#      - /api/user/oauth2.0/gitee/success
