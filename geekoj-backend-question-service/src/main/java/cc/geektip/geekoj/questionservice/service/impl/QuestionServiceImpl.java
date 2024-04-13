@@ -33,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -191,6 +192,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     }
 
     @Override
+    @Transactional
     public Question addQuestion(QuestionAddRequest questionAddRequest) {
         UserInfoVo currentUser = sessionUtils.getCurrentUser();
         Question question = new Question();
@@ -209,6 +211,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     }
 
     @Override
+    @Transactional
     public boolean updateQuestion(QuestionUpdateRequest questionUpdateRequest) {
         Question question = new Question();
         BeanUtils.copyProperties(questionUpdateRequest, question);
@@ -230,6 +233,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     }
 
     @Override
+    @Transactional
     public boolean deleteQuestion(Long id) {
         Question oldQuestion = getById(id);
         ThrowUtils.throwIf(oldQuestion == null, AppHttpCodeEnum.NOT_EXIST);
@@ -237,6 +241,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     }
 
     @Override
+    @Transactional
     public boolean editQuestion(QuestionEditRequest questionEditRequest) {
         Question question = new Question();
         BeanUtils.copyProperties(questionEditRequest, question);

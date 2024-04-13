@@ -46,8 +46,8 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
      * @param questionSubmitAddRequest
      * @return
      */
-    @Transactional
     @Override
+    @Transactional
     public QuestionSubmit doQuestionSubmit(QuestionSubmitAddRequest questionSubmitAddRequest) {
         // 校验编程语言是否合法
         String language = questionSubmitAddRequest.getLanguage();

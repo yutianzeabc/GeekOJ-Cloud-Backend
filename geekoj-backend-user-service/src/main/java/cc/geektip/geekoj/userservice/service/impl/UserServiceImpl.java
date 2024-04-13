@@ -93,8 +93,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         log.debug("发送验证码：{}", code);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void register(UserRegisterRequest userRegisterRequest) {
         // 1. 校验验证码
         String code = userRegisterRequest.getCaptcha();
@@ -146,8 +146,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         // 4. 登录成功
         StpUtil.login(user.getUid());
-        UserInfoVo userInfoVo = objToVo(user);
-        StpUtil.getSession().set(SaSession.USER, userInfoVo);
+        updateSessionCacheByEntity(user);
     }
 
     @Override
@@ -158,6 +157,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    @Transactional
     public void oauthLogin(SocialUser socialUser) throws BusinessException {
         // 1. 发送OAUTH请求
         HashMap<String, String> param = new HashMap<>();
@@ -185,8 +185,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             userUpdate.setExpiresIn(socialUser.getExpires_in());
             updateById(userUpdate);
             StpUtil.login(user.getUid());
-            UserInfoVo userInfoVo = objToVo(user);
-            StpUtil.getSession().set(SaSession.USER, userInfoVo);
+            updateSessionCacheByEntity(user);
         } else {
             // 5. 如果用户不存在则注册
             User userNew = new User();
@@ -196,9 +195,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             userNew.setAccessToken(socialUser.getAccess_token());
             userNew.setExpiresIn(socialUser.getExpires_in());
             save(userNew);
+            // 初始化用户信息
+            User userUpdate = new User();
+            userUpdate.setUid(userNew.getUid());
+            userUpdate.setAccessKey(DigestUtil.sha1Hex(userNew.getUid() + RandomUtil.randomString(32)));
+            userUpdate.setSecretKey(DigestUtil.sha1Hex(userNew.getUid() + RandomUtil.randomString(32)));
+            updateById(userUpdate);
+            // 登录
             StpUtil.login(userNew.getUid());
-            UserInfoVo userInfoVo = objToVo(userNew);
-            StpUtil.getSession().set(SaSession.USER, userInfoVo);
+            updateSessionCacheById(userNew.getUid());
         }
     }
 
@@ -229,6 +234,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    @Transactional
     public void updateCurrentUser(UserUpdateRequest updateVo) {
         // 当前用户只允许修改自己的信息，管理员可以修改任何用户的信息
         Long currentUid = sessionUtils.getCurrentUserId();
@@ -240,11 +246,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setTags(JSON.toJSONString(updateVo.getTags()));
         updateById(user);
         // 更新缓存
-        updateSessionCache(updateVo.getUid());
+        updateSessionCacheById(updateVo.getUid());
     }
 
-
     @Override
+    @Transactional
     public void updatePwd(PwdUpdateRequest pwdUpdateRequest) {
         // 只允许当前用户修改自己的密码
         Long currentUid = sessionUtils.getCurrentUserId();
@@ -262,6 +268,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    @Transactional
     public void bindPhone(String phone, String code) {
         // 0. 获取当前用户（同时校验是否登录）
         UserInfoVo userInfoVo = sessionUtils.getCurrentUser();
@@ -283,10 +290,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setPhone(phone);
         updateById(user);
         // 4. 更新缓存
-        updateSessionCache(userInfoVo.getUid());
+        updateSessionCacheById(userInfoVo.getUid());
     }
 
     @Override
+    @Transactional
     public void updateMail(String mail, String code) {
         // 0. 获取当前用户（同时校验是否登录）
         UserInfoVo userInfoVo = sessionUtils.getCurrentUser();
@@ -308,10 +316,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setEmail(mail);
         updateById(user);
         // 4. 更新缓存
-        updateSessionCache(userInfoVo.getUid());
+        updateSessionCacheById(userInfoVo.getUid());
     }
 
     @Override
+    @Transactional
     public void loginByPhone(PhoneLoginRequest request) {
         // 1. 校验验证码
         String redisSmsCodeKey = RedisConstant.CODE_SMS_CACHE_PREFIX + request.getPhone();
@@ -328,11 +337,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             userNew.setPhone(request.getPhone());
             userNew.setUsername(USERNAME_PREFIX + RandomUtil.randomString(6));
             save(userNew);
+            // 初始化用户信息
+            User userUpdate = new User();
+            userUpdate.setUid(userNew.getUid());
+            userUpdate.setAccessKey(DigestUtil.sha1Hex(userNew.getUid() + RandomUtil.randomString(32)));
+            userUpdate.setSecretKey(DigestUtil.sha1Hex(userNew.getUid() + RandomUtil.randomString(32)));
+            updateById(userUpdate);
+            // 登录
             StpUtil.login(userNew.getUid());
-            updateSessionCache(userNew.getUid());
+            updateSessionCacheById(userNew.getUid());
         } else {
             StpUtil.login(user.getUid());
-            updateSessionCache(user.getUid());
+            updateSessionCacheById(user.getUid());
         }
     }
 
@@ -414,9 +430,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userInfoVo;
     }
 
-    public void updateSessionCache(Long uid) {
+    public void updateSessionCacheById(Long uid) {
         User user = getById(uid);
         ThrowUtils.throwIf(user == null, AppHttpCodeEnum.NOT_EXIST);
+        updateSessionCacheByEntity(user);
+    }
+
+    public void updateSessionCacheByEntity(User user) {
         UserInfoVo userInfoVo = objToVo(user);
         StpUtil.getSession().set(SaSession.USER, userInfoVo);
     }
