@@ -1,6 +1,9 @@
 spring:
   profiles:
     active: ${geekoj.profiles.active}
+  threads:
+    virtual:
+      enabled: true
   main:
     web-application-type: reactive
   mvc:

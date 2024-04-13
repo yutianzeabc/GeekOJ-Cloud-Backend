@@ -9,9 +9,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication(scanBasePackages = "cc.geektip.geekoj")
+@EnableDubbo(scanBasePackages = "cc.geektip.geekoj.judgeservice.service")
 @EnableFeignClients(basePackages = "cc.geektip.geekoj.judgeservice.client")
 @EnableScheduling
-@EnableDubbo
 @EnableDiscoveryClient
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 public class GeekojJudgeServiceApplication {

@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @MapperScan("cc.geektip.geekoj.userservice.mapper")
 @ComponentScan("cc.geektip.geekoj")
-@EnableDubbo
+@EnableDubbo(scanBasePackages = "cc.geektip.geekoj.userservice.service")
 @EnableScheduling
 @EnableDiscoveryClient
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
