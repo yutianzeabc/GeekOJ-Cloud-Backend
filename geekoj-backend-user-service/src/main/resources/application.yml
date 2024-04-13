@@ -1,6 +1,9 @@
 spring:
   profiles:
     active: ${geekoj.profiles.active}
+  threads:
+    virtual:
+      enabled: true
   servlet:
     multipart:
       max-file-size: 10MB
@@ -96,8 +99,8 @@ server:
 # GeekOJ 配置
 geekoj:
   thread-pool:
-    core-size: 20
-    max-size: 200
+    core-size: 8
+    max-size: 128
     keep-alive-time: 10
   third-party:
     sms:

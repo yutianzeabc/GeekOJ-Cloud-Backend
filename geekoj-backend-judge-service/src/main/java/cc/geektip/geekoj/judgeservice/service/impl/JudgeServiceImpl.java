@@ -26,9 +26,13 @@ import jakarta.annotation.Resource;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 /**
  * @description: 判题服务

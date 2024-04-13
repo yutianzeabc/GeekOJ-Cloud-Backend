@@ -1,6 +1,9 @@
 spring:
   profiles:
     active: ${geekoj.profiles.active}
+  threads:
+    virtual:
+      enabled: true
   servlet:
     multipart:
       max-file-size: 10MB

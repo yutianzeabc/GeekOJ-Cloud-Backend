@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:17-latest
+FROM azul/zulu-openjdk-alpine:21-latest
 MAINTAINER Bill Yu
 LABEL authors="Bill Yu"
 LABEL version="1.0.0"
