@@ -34,7 +34,7 @@ public class FollowMQConsumer implements RocketMQListener<Follow> {
     private UserService userService;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void onMessage(Follow follow) {
         // 1. 获取当前是否已关注
         boolean isFollow = followService.isFollow(follow.getUid(), follow.getFollowUid());

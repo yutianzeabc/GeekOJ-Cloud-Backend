@@ -24,7 +24,6 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public R businessExceptionHandler(BusinessException e) {
         log.error("出现了异常！{}", e.getMessage());
-
         return R.error(e.getCode(), e.getMessage());
     }
 
@@ -49,7 +48,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public R constraintViolationExceptionHandler(ConstraintViolationException e) {
         log.error("出现了异常！{}", e.getMessage());
-        return R.error(AppHttpCodeEnum.PARAMS_ERROR);
+        return R.error(AppHttpCodeEnum.PARAMS_ERROR.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -57,7 +56,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public R methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
         log.error("出现了异常！{}", e.getMessage());
-        return R.error(AppHttpCodeEnum.PARAMS_ERROR);
+        return R.error(AppHttpCodeEnum.PARAMS_ERROR.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(BlockException.class)

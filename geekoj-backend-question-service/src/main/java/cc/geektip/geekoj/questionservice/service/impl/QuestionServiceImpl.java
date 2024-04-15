@@ -192,7 +192,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Question addQuestion(QuestionAddRequest questionAddRequest) {
         UserInfoVo currentUser = sessionUtils.getCurrentUser();
         Question question = new Question();
@@ -211,7 +211,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean updateQuestion(QuestionUpdateRequest questionUpdateRequest) {
         Question question = new Question();
         BeanUtils.copyProperties(questionUpdateRequest, question);
@@ -233,7 +233,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean deleteQuestion(Long id) {
         Question oldQuestion = getById(id);
         ThrowUtils.throwIf(oldQuestion == null, AppHttpCodeEnum.NOT_EXIST);
@@ -241,7 +241,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean editQuestion(QuestionEditRequest questionEditRequest) {
         Question question = new Question();
         BeanUtils.copyProperties(questionEditRequest, question);

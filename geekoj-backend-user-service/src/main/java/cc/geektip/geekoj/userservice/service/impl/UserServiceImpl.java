@@ -94,7 +94,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void register(UserRegisterRequest userRegisterRequest) {
         // 1. 校验验证码
         String code = userRegisterRequest.getCaptcha();
@@ -157,7 +157,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void oauthLogin(SocialUser socialUser) throws BusinessException {
         // 1. 发送OAUTH请求
         HashMap<String, String> param = new HashMap<>();
@@ -234,7 +234,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateCurrentUser(UserUpdateRequest updateVo) {
         // 当前用户只允许修改自己的信息，管理员可以修改任何用户的信息
         Long currentUid = sessionUtils.getCurrentUserId();
@@ -250,7 +250,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updatePwd(PwdUpdateRequest pwdUpdateRequest) {
         // 只允许当前用户修改自己的密码
         Long currentUid = sessionUtils.getCurrentUserId();
@@ -268,7 +268,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void bindPhone(String phone, String code) {
         // 0. 获取当前用户（同时校验是否登录）
         UserInfoVo userInfoVo = sessionUtils.getCurrentUser();
@@ -294,7 +294,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateMail(String mail, String code) {
         // 0. 获取当前用户（同时校验是否登录）
         UserInfoVo userInfoVo = sessionUtils.getCurrentUser();
@@ -320,7 +320,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void loginByPhone(PhoneLoginRequest request) {
         // 1. 校验验证码
         String redisSmsCodeKey = RedisConstant.CODE_SMS_CACHE_PREFIX + request.getPhone();
