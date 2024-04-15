@@ -23,7 +23,8 @@ import java.util.List;
 @Component
 public class JavaLanguageJudgeStrategy implements JudgeStrategy {
 
-    private static final long JAVA_PROGRAM_TIME_LIMIT_MULTIPLIER = 2L;
+    // 暂不启用TIME_LIMIT_MULTIPLIER
+    private static final long JAVA_PROGRAM_TIME_LIMIT_MULTIPLIER = 1L;
 
     /**
      * 执行判题
@@ -59,7 +60,7 @@ public class JavaLanguageJudgeStrategy implements JudgeStrategy {
                 maxMemory = Math.max(maxMemory, memory);
                 // 判断输出是否正确
                 if (expectedOutputList.get(i).equals(outputList.get(i))) {
-                    // 超时, 乘以 2 是因为 Java 程序的执行时间通常会比较长
+                    // 超时
                     if (maxTime > judgeConfig.getTimeLimit() * JAVA_PROGRAM_TIME_LIMIT_MULTIPLIER) {
                         judgeInfo.setTime(maxTime);
                         judgeInfo.setMemory(maxMemory);
