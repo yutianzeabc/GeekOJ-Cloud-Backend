@@ -24,8 +24,7 @@ public class JudgeStrategyRegistry {
     @PostConstruct
     public void init() {
         judgeStrategyMap.put(JudgeStrategyEnum.DEFAULT.getValue(), defaultJudgeStrategy);
-        // 暂不注册独立的 Java 语言判题策略
-        // judgeStrategyMap.put(JudgeStrategyEnum.JAVA.getValue(), javaLanguageJudgeStrategy);
+        judgeStrategyMap.put(JudgeStrategyEnum.JAVA.getValue(), javaLanguageJudgeStrategy);
     }
 
     public JudgeStrategy getInstance(String type) {
