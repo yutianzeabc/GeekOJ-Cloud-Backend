@@ -8,7 +8,7 @@ services:
       - ${GEEKOJ_DIRECTORY}/data/redis/data:/data
     ports:
       - ${REDIS_PORT:-6379}:6379
-    command: redis-server --requirepass ${REDIS_PASSWORD:-123456} --appendonly yes
+    command: redis-server --requirepass ${REDIS_PASSWORD:-123456} --appendonly yes --maxmemory ${REDIS_MAX_MEMORY:-2gb} --maxmemory-policy volatile-lru
     networks:
       geekoj-network:
         ipv4_address: ${REDIS_HOST:-192.168.0.2}

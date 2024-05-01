@@ -16,7 +16,8 @@ import java.util.List;
 
 /**
 * @author Bill Yu
-* @description 针对表【question(题目)】的数据库操作Service*/
+* @description 针对表【question(题目)】的数据库操作Service
+*/
 public interface QuestionService extends IService<Question> {
     /**
      * 获取查询条件
