@@ -1,0 +1,41 @@
+# 开发环境配置文件
+spring:
+  application:
+    name: geekoj-backend-ai-service
+server:
+  port: 8103
+geekoj:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  base:
+    url: ${BACKEND_URL:http://localhost:8100}
+  service:
+    ip: ${JUDGE_SERVICE_HOST:localhost}
+  mysql:
+    database: ${MYSQL_DATABASE:geekoj_cloud}
+    host: ${MYSQL_HOST:localhost}
+    port: ${MYSQL_PORT:3306}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:123456}
+  nacos:
+    host: ${NACOS_HOST:localhost}
+    port: ${NACOS_PORT:8848}
+    username: ${NACOS_USERNAME:nacos}
+    password: ${NACOS_PASSWORD:nacos}
+  sentinel:
+    host: ${SENTINEL_HOST:localhost}
+    dashboard:
+      port: ${SENTINEL_DASHBOARD_PORT:8858}
+    api:
+      port: ${SENTINEL_API_PORT:8719}
+  redis:
+    database: ${REDIS_DATABASE:0}
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:123456}
+  dubbo:
+    port: ${DUBBO_PORT:-1}
+  ai:
+    api-key: ${AI_API_KEY}
+    model-id: ${AI_MODEL_ID:glm-4-air}
+    user-daily-limit: ${AI_USER_DAILY_LIMIT:100}

@@ -245,6 +245,10 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
 
     @Override
     public void removeByUidPair(Long uid, Long followUid) {
+        String redisKey = RedisConstant.USER_FOLLOWS_PREFIX + uid;
+        longRedisTemplate.opsForSet().remove(redisKey, followUid);
+        String redisKey2 = RedisConstant.USER_FANS_PREFIX + followUid;
+        longRedisTemplate.opsForSet().remove(redisKey2, uid);
         lambdaUpdate().eq(Follow::getUid, uid).eq(Follow::getFollowUid, followUid).remove();
     }
 }

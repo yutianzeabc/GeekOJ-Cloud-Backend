@@ -36,6 +36,10 @@ spring:
           uri: lb://geekoj-backend-judge-service
           predicates:
             - Path=/api/judge/**
+        - id: geekoj-backend-ai-service
+          uri: lb://geekoj-backend-ai-service
+          predicates:
+            - Path=/api/ai/**
   data:
     redis:
       database: ${geekoj.redis.database}

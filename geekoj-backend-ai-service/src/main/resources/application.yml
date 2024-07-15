@@ -1,0 +1,96 @@
+spring:
+  profiles:
+    active: ${geekoj.profiles.active}
+  threads:
+    virtual:
+      enabled: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+    async:
+      request-timeout: 60000
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+  freemarker:
+    enabled: false
+    check-template-location: false
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+      server-addr: ${geekoj.nacos.host}:${geekoj.nacos.port}
+      username: ${geekoj.nacos.username}
+      password: ${geekoj.nacos.password}
+    sentinel:
+      eager: true
+      transport:
+        dashboard: ${geekoj.sentinel.host}:${geekoj.sentinel.dashboard.port}
+        port: ${geekoj.sentinel.api.port}
+        client-ip: ${geekoj.service.ip}
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${geekoj.mysql.host}:${geekoj.mysql.port}/${geekoj.mysql.database}
+    username: ${geekoj.mysql.username}
+    password: ${geekoj.mysql.password}
+  data:
+    redis:
+      database: ${geekoj.redis.database}
+      host: ${geekoj.redis.host}
+      port: ${geekoj.redis.port}
+      password: ${geekoj.redis.password}
+ai:
+  api-key: ${geekoj.ai.api-key}
+  model-id: ${geekoj.ai.model-id}
+  user-daily-limit: ${geekoj.ai.user-daily-limit}
+# Dubbo 配置
+dubbo:
+  application:
+    name: GeekOJ
+    version: 1.0.0
+  registry:
+    address: nacos://${geekoj.nacos.host}:${geekoj.nacos.port}?username=${geekoj.nacos.username}&password=${geekoj.nacos.password}
+  protocol:
+    name: dubbo
+    port: ${geekoj.dubbo.port}
+  scan:
+    base-packages: cc.geektip.geekoj.api
+# Sa-Token 配置
+sa-token:
+  # 打开 RPC 调用鉴权
+  check-same-token: true
+  # 打开日志
+  is-log: true
+# Servlet 配置
+server:
+  servlet:
+    context-path: /api/ai
+# SpringDoc 配置
+springdoc:
+  info:
+    title: "GeekOJ AI服务"
+    version: "1.0.0"
+    description: "GeekOJ AI服务接口文档"
+    contact:
+      name: Bill Yu
+      url: ${geekoj.base.url}
+    license:
+      name: Apache 2.0
+      url: https://www.apache.org/licenses/LICENSE-2.0.html
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: "cc.geektip.geekoj.aiservice.controller"
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn

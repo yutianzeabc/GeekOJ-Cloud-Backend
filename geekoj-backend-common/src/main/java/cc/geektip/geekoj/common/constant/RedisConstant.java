@@ -21,4 +21,11 @@ public interface RedisConstant {
     String USER_FANS_PREFIX = "user:fans:id:";
     String USER_FANS_COUNT_PREFIX = "user:fans:count:id:";
     Integer USER_FOLLOWS_FANS_TTL = 4;
+
+    /**
+     * AI分析
+     */
+    String AI_USER_REQUEST_COUNT_PREFIX = "ai:user:request:count:id:";
+    String AI_ANALYSE_PREFIX = "ai:analyse:";
+
 }
