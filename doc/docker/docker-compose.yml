@@ -283,6 +283,43 @@ services:
       geekoj-network:
         ipv4_address: ${JUDGE_SERVICE_HOST:-192.168.0.23}
 
+  geekoj-backend-ai-service:
+    image: yutianzeabc/geekoj-backend-ai-service:1.0.0
+    container_name: geekoj-backend-ai-service
+    restart: unless-stopped
+    depends_on:
+      - geekoj-nacos
+      - geekoj-redis
+      - geekoj-backend-user-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      - AI_SERVICE_HOST=${AI_SERVICE_HOST:-192.168.0.24}
+      - BACKEND_URL=${BACKEND_URL:-http://192.168.0.20:8100}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-geekoj_cloud}
+      - MYSQL_HOST=${MYSQL_HOST:-localhost}
+      - MYSQL_PORT=${MYSQL_PORT:-3306}
+      - MYSQL_USERNAME=${MYSQL_USERNAME:-root}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-123456}
+      - NACOS_HOST=${NACOS_HOST:-192.168.0.4}
+      - NACOS_PORT=${NACOS_PORT:-8848}
+      - NACOS_USERNAME=${NACOS_USERNAME:-nacos}
+      - NACOS_PASSWORD=${NACOS_PASSWORD:-nacos}
+      - SENTINEL_HOST=${SENTINEL_HOST:-192.168.0.5}
+      - SENTINEL_PORT=${SENTINEL_PORT:-8858}
+      - REDIS_DATABASE=${REDIS_DATABASE:-0}
+      - REDIS_HOST=${REDIS_HOST:-192.168.0.2}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-123456}
+      - DUBBO_PORT=${DUBBO_PORT:-1}
+      - AI_API_KEY=${AI_API_KEY}
+      - AI_MODEL_ID=${AI_MODEL_ID:-glm-4-air}
+      - AI_USER_DAILY_LIMIT=${AI_USER_DAILY_LIMIT:-3}
+    ports:
+      - "8104:8104"
+    networks:
+      geekoj-network:
+        ipv4_address: ${AI_SERVICE_HOST:-192.168.0.24}
+
   geekoj-code-sandbox:
     image: yutianzeabc/geekoj-code-sandbox:1.0.0
     container_name: geekoj-code-sandbox-1
@@ -310,7 +347,7 @@ services:
       - "8090:8090"
     networks:
       geekoj-network:
-        ipv4_address: ${CODE_SANDBOX_1_HOST:-192.168.0.24}
+        ipv4_address: ${CODE_SANDBOX_1_HOST:-192.168.0.25}
 
 networks:
   geekoj-network:
