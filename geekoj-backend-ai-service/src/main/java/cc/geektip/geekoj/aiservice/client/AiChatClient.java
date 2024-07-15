@@ -99,7 +99,7 @@ public class AiChatClient {
                 .build();
         try {
             ModelApiResponse invokeModelApiResp = clientV4.invokeModelApi(chatCompletionRequest);
-            return invokeModelApiResp.getData().getChoices().getFirst().toString();
+            return invokeModelApiResp.getData().getChoices().getFirst().getMessage().getContent().toString();
         } catch (Exception e) {
             throw new BusinessException(AppHttpCodeEnum.INTERNAL_SERVER_ERROR, e.getMessage());
         }
