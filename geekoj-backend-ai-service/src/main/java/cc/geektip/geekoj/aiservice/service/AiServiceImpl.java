@@ -12,7 +12,6 @@ import cc.geektip.geekoj.api.service.ai.AiService;
 import cc.geektip.geekoj.api.service.question.QuestionService;
 import cc.geektip.geekoj.api.service.question.QuestionSubmitService;
 import cc.geektip.geekoj.common.common.AppHttpCodeEnum;
-import cc.geektip.geekoj.common.exception.BusinessException;
 import cc.geektip.geekoj.common.exception.ThrowUtils;
 import cn.hutool.core.util.StrUtil;
 import com.github.benmanes.caffeine.cache.Cache;
@@ -81,45 +80,35 @@ public class AiServiceImpl implements AiService {
         ThrowUtils.throwIf(questionSubmit == null, AppHttpCodeEnum.NOT_EXIST, "提交记录不存在");
         ThrowUtils.throwIf(!sessionUtils.hasUserView(currentUser, questionSubmit.getUserId()), AppHttpCodeEnum.NO_AUTH, "当前无权分析该提交记录");
 
-        // 首先，查询本地缓存
+        // 查询本地缓存
         Long questionId = questionSubmit.getQuestionId();
         String cacheKey = buildCacheKey(questionId, questionSubmitId);
         String aiAnswer = aiAnswerCacheMap.getIfPresent(cacheKey);
         if (StrUtil.isNotBlank(aiAnswer)) {
             return new AiAnalyseResponse(aiAnswer);
         }
-
-        try {
-            // 其次，查询Redis缓存
-            aiAnswer = stringRedisTemplate.opsForValue().getAndExpire(cacheKey, 6, TimeUnit.HOURS);
-            if (StrUtil.isNotBlank(aiAnswer)) {
-                aiAnswerCacheMap.put(cacheKey, aiAnswer);
-                return new AiAnalyseResponse(aiAnswer);
-            }
-            // 如果查不到，调用AI服务，写入本地和Redis缓存
-
-            // 检查请求次数限制
-            checkRequestLimit(currentUser.getUid());
-
-            Question question = questionService.getById(questionId);
-            ThrowUtils.throwIf(question == null, AppHttpCodeEnum.NOT_EXIST, "题目不存在");
-
-            // 调用AI服务
-            String userPrompt = getAiAnalyseUserPrompt(question, questionSubmit);
-            aiAnswer = aiChatClient.doSyncStableRequest(AI_ANALYSE_SYSTEM_PROMPT, userPrompt);
-
-            // 写入本地缓存和Redis缓存
+        // 查询Redis缓存
+        aiAnswer = stringRedisTemplate.opsForValue().getAndExpire(cacheKey, 6, TimeUnit.HOURS);
+        if (StrUtil.isNotBlank(aiAnswer)) {
             aiAnswerCacheMap.put(cacheKey, aiAnswer);
-            stringRedisTemplate.opsForValue().set(cacheKey, aiAnswer, 6, TimeUnit.HOURS);
-
-            // 记录请求次数
-            incrementRequestCount(currentUser.getUid());
-
             return new AiAnalyseResponse(aiAnswer);
-        } catch (Exception e) {
-            throw new BusinessException(AppHttpCodeEnum.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+        // 如果均查不到，调用AI服务，写入本地和Redis缓存
+        // 检查请求次数限制
+        checkRequestLimit(currentUser.getUid());
+        // 查询题目
+        Question question = questionService.getById(questionId);
+        ThrowUtils.throwIf(question == null, AppHttpCodeEnum.NOT_EXIST, "题目不存在");
+        // 调用AI服务
+        String userPrompt = getAiAnalyseUserPrompt(question, questionSubmit);
+        aiAnswer = aiChatClient.doSyncStableRequest(AI_ANALYSE_SYSTEM_PROMPT, userPrompt);
+        // 写入本地缓存和Redis缓存
+        aiAnswerCacheMap.put(cacheKey, aiAnswer);
+        stringRedisTemplate.opsForValue().set(cacheKey, aiAnswer, 6, TimeUnit.HOURS);
+        // 记录请求次数
+        incrementRequestCount(currentUser.getUid());
 
+        return new AiAnalyseResponse(aiAnswer);
     }
 
     private String getAiAnalyseUserPrompt(Question question, QuestionSubmit questionSubmit) {
@@ -146,7 +135,7 @@ public class AiServiceImpl implements AiService {
         ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
         String requestCountStr = ops.get(requestKey);
         int requestCount = requestCountStr == null ? 0 : Integer.parseInt(requestCountStr);
-        ThrowUtils.throwIf(requestCount >= aiConfig.getUserDailyLimit(), AppHttpCodeEnum.RATE_LIMIT, "请求AI次数已达今日上限");
+        ThrowUtils.throwIf(requestCount >= aiConfig.getUserDailyLimit(), AppHttpCodeEnum.RATE_LIMIT, "本用户请求AI次数已达今日上限，请明天再试");
     }
 
     private void incrementRequestCount(Long userId) {
