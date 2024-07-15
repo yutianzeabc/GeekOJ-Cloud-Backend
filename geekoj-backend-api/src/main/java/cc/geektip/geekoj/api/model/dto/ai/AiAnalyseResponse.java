@@ -18,6 +18,6 @@ public class AiAnalyseResponse {
     /**
      * AI分析结果
      */
-    private String aiResult;
+    private String aiAnalyseResult;
 
 }

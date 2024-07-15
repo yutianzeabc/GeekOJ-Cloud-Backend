@@ -44,7 +44,9 @@ public class AiServiceImpl implements AiService {
             【【代码沙箱测试输出】】
             ```
             请你根据上述信息，按照以下步骤来对用户作答进行分析：
-            1. 要求：首先，分析用户代码的总体思路是否正确；其次，分析用户算法的时间复杂度和空间复杂度是否为本题最优解；最后，简要逐点列出可能导致错误的原因，给出错误修复提示，无需给出修正后的代码片段。
+            1. 要求：首先，分析用户代码的总体思路是否正确；
+                    其次，分析用户算法的时间复杂度和空间复杂度是否为本题最优解；
+                    最后，如果有可能存在的BUG，简要逐点列出错误点并给出相应的修复提示，无需给出修正后的代码片段。
             2. 输出语言要求：中文，表达严谨专业，内容精炼简要。
             3. 返回格式必须为Markdown格式文本，无额外的前后缀符号。""";
 
@@ -73,14 +75,15 @@ public class AiServiceImpl implements AiService {
     public AiAnalyseResponse doAnalyse(AiAnalyseRequest aiAnalyseRequest) {
         // 校验参数
         UserInfoVo currentUser = sessionUtils.getCurrentUser();
-        Integer questionId = aiAnalyseRequest.getQuestionId();
-        Integer questionSubmitId = aiAnalyseRequest.getQuestionSubmitId();
+
+        Long questionSubmitId = aiAnalyseRequest.getQuestionSubmitId();
         QuestionSubmit questionSubmit = questionSubmitService.getById(questionSubmitId);
         ThrowUtils.throwIf(questionSubmit == null, AppHttpCodeEnum.NOT_EXIST, "提交记录不存在");
         ThrowUtils.throwIf(!sessionUtils.hasUserView(currentUser, questionSubmit.getUserId()), AppHttpCodeEnum.NO_AUTH, "当前无权分析该提交记录");
 
         // 首先，查询本地缓存
-        String cacheKey = buildCacheKey(questionId.longValue(), questionSubmitId.longValue());
+        Long questionId = questionSubmit.getQuestionId();
+        String cacheKey = buildCacheKey(questionId, questionSubmitId);
         String aiAnswer = aiAnswerCacheMap.getIfPresent(cacheKey);
         if (StrUtil.isNotBlank(aiAnswer)) {
             return new AiAnalyseResponse(aiAnswer);

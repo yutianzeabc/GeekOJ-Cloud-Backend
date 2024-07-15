@@ -17,8 +17,6 @@ import lombok.NoArgsConstructor;
 public class AiAnalyseRequest {
 
     @Min(1)
-    private Integer questionId;
-    @Min(1)
-    private Integer questionSubmitId;
+    private Long questionSubmitId;
 
 }
