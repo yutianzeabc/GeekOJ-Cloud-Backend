@@ -7,6 +7,6 @@ ENV TZ=Asia/Shanghai
 
 WORKDIR /
 COPY target/geekoj-backend-ai-service-1.0.0.jar app.jar
-EXPOSE 8100
+EXPOSE 8104
 
 ENTRYPOINT ["java", "-server", "-jar", "app.jar"]
